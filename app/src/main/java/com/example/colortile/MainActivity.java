@@ -2,7 +2,6 @@ package com.example.colortile;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.Constraints;
 
 import android.graphics.Point;
 import android.os.Bundle;
