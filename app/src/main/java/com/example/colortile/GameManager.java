@@ -2,10 +2,8 @@ package com.example.colortile;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.graphics.PorterDuff;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -15,7 +13,8 @@ import android.view.View;
 public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener, Runnable {
     static Long FPS = 60L;
     static Float BOARD_MAERGIN_LEFT_AND_RIGHT = 10f;
-    static Point BOARD_PIECE_SIZE = new Point(10, 13);
+    static int BOARD_ROW_NUM = 13;
+    static int BOARD_COLUMN_NUM = 10;
 
     private Thread thread = new Thread(this);
     private Boolean isActive = false;
@@ -25,16 +24,16 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
     private Float height;
     private Float width;
 
+    private BoardManager board = new BoardManager();
+
     // TEST
-    private Tile tile = new Tile();
-    private Board board = new Board();
+    private PointF prePos;
 
     GameManager(SurfaceView surfaceView) {
         holder = surfaceView.getHolder();
         holder.addCallback(this);
         surfaceView.setOnTouchListener(this);
-        tile.init(Tile.Type.RED);
-        tile.getTransform().setPosition(new PointF(50f, 50f));
+        board.init(BOARD_ROW_NUM, BOARD_COLUMN_NUM);
 
         thread.start();
     }
@@ -48,8 +47,6 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         this.width = (float) width;
         this.height = (float) height;
-        tile.setSize(this.width / 10f);
-        board.setPieceSize(BOARD_PIECE_SIZE);
         board.setSize(this.width - BOARD_MAERGIN_LEFT_AND_RIGHT * 2f);
         Float posY = (this.height - board.getHeight()) / 2f;
         board.getTransform().setPosition(new PointF(BOARD_MAERGIN_LEFT_AND_RIGHT, posY));
@@ -91,6 +88,16 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
+                PointF diff = new PointF(event.getX() - prePos.x, event.getY() - prePos.y);
+                PointF boardPos = board.getTransform().getPosition();
+                board.getTransform().setPosition(new PointF(boardPos.x + diff.x, boardPos.y + diff.y));
+                prePos = new PointF(event.getX(), event.getY());
+                break;
+            case MotionEvent.ACTION_DOWN:
+                prePos = new PointF(event.getX(), event.getY());
+                break;
+            case MotionEvent.ACTION_UP:
+                board.onTouch(new PointF(event.getX(), event.getY()));
                 break;
         }
         return true;
@@ -103,9 +110,8 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
         Canvas canvas = holder.lockCanvas();
         if (canvas == null) return;
 
-        canvas.drawColor(Color.WHITE);
+        canvas.drawColor(Color.GRAY);
         board.draw(canvas);
-        tile.draw(canvas);
 
         holder.unlockCanvasAndPost(canvas);
     }

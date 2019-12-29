@@ -35,8 +35,10 @@ class Tile extends GameObject{
                 paint.setColor(Color.parseColor("#ee5555"));
                 break;
             case GREEN:
+                paint.setColor(Color.parseColor("#55ee55"));
                 break;
             case BLUE:
+                paint.setColor(Color.parseColor("#5555ee"));
                 break;
             case NONE:
                 break;
