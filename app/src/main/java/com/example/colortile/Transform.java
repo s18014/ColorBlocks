@@ -6,15 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Transform {
-    Transform parent;
-    List<Transform> children = new ArrayList<Transform>();
+    private Transform parent;
+    private List<Transform> children = new ArrayList<Transform>();
     private PointF position = new PointF(0f, 0f);
     private PointF localPosition = new PointF(0f, 0f);
 
     public PointF getPosition() {
         if (parent == null) return position;
-        PointF parentPos = parent.getPosition();
-        return new PointF(parentPos.x + localPosition.x, parentPos.y + localPosition.y);
+        return parent.localToWorldPosition(localPosition);
     }
 
     public PointF getLocalPosition() {
@@ -24,8 +23,7 @@ public class Transform {
     public void setPosition(PointF p) {
         position = p;
         if (parent != null) {
-            PointF parentPos = parent.getPosition();
-            localPosition = new PointF(p.x - parentPos.x, p.y - parentPos.y);
+            localPosition = parent.worldToLocalPosition(p);
         }
     }
 
@@ -42,6 +40,15 @@ public class Transform {
         this.parent.removeChild(this);
         this.parent = null;
     }
+
+    public PointF worldToLocalPosition(PointF p) {
+        return new PointF(p.x - position.x, p.y - position.y);
+    }
+
+    public PointF localToWorldPosition(PointF p) {
+        return new PointF(p.x + position.x, p.y + position.y);
+    }
+
 
     private void addChild(Transform child) {
         this.children.add(child);

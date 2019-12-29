@@ -3,6 +3,7 @@ package com.example.colortile;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.view.MotionEvent;
@@ -10,42 +11,53 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+
 public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener, Runnable {
     static Long FPS = 60L;
+    static Float BOARD_MAERGIN_LEFT_AND_RIGHT = 10f;
+    static Point BOARD_PIECE_SIZE = new Point(10, 13);
 
     private Thread thread = new Thread(this);
     private Boolean isActive = false;
+    private Boolean isSurfaceActive = false;
     private SurfaceHolder holder;
 
-    private int height;
-    private int width;
+    private Float height;
+    private Float width;
 
-    // test
-    private Transform parent = new Transform();
-    private Transform child1 = new Transform();
+    // TEST
+    private Tile tile = new Tile();
+    private Board board = new Board();
 
     GameManager(SurfaceView surfaceView) {
         holder = surfaceView.getHolder();
         holder.addCallback(this);
         surfaceView.setOnTouchListener(this);
+        tile.init(Tile.Type.RED);
+        tile.getTransform().setPosition(new PointF(50f, 50f));
 
-        child1.setParent(parent);
-    }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
         thread.start();
     }
 
     @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        isSurfaceActive = true;
+    }
+
+    @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        this.width = width;
-        this.height = height;
+        this.width = (float) width;
+        this.height = (float) height;
+        tile.setSize(this.width / 10f);
+        board.setPieceSize(BOARD_PIECE_SIZE);
+        board.setSize(this.width - BOARD_MAERGIN_LEFT_AND_RIGHT * 2f);
+        Float posY = (this.height - board.getHeight()) / 2f;
+        board.getTransform().setPosition(new PointF(BOARD_MAERGIN_LEFT_AND_RIGHT, posY));
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        isActive = false;
+        isSurfaceActive = false;
     }
 
     @Override
@@ -53,7 +65,7 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
         int frame = 0;
         while (true) {
             // バックグラウンド用のループ
-            if (!isActive) {
+            if (!isActive || !isSurfaceActive) {
                 System.out.println("Running on background");
                 try {
                     Thread.sleep(100);
@@ -62,12 +74,7 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
                 }
             }
 
-            Float sin = (float) Math.sin((double) frame / 10);
-            Float cos = (float) Math.cos((double) frame / 10);
-            Float length = 300f;
-
-            child1.setLocalPosition(new PointF(sin * length, cos * length));
-
+            update();
             draw();
 
             frame++;
@@ -84,10 +91,12 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
-                parent.setPosition(new PointF(event.getX(), event.getY()));
                 break;
         }
         return true;
+    }
+
+    private void update() {
     }
 
     private void draw() {
@@ -95,16 +104,12 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
         if (canvas == null) return;
 
         canvas.drawColor(Color.WHITE);
-        Paint paint = new Paint();
-        paint.setColor(Color.GREEN);
-        PointF parentPos = parent.getPosition();
-        canvas.drawCircle(parentPos.x, parentPos.y, 200, paint);
-        PointF child1Pos = child1.getPosition();
-        paint.setColor(Color.RED);
-        canvas.drawCircle(child1Pos.x, child1Pos.y, 50, paint);
+        board.draw(canvas);
+        tile.draw(canvas);
 
         holder.unlockCanvasAndPost(canvas);
     }
+
 
 
     public void onResume() {
@@ -114,6 +119,5 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
     public void onPause() {
         isActive = false;
     }
-
 
 }
