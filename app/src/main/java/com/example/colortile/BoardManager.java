@@ -8,6 +8,11 @@ import android.graphics.PointF;
 
 public class BoardManager extends GameObject {
 
+    enum CheckState {
+        NONE,
+        CHECKED
+    }
+
     private Float width;
     private Float height;
     private int rowNum;
@@ -114,4 +119,9 @@ public class BoardManager extends GameObject {
             }
         }
     }
+
+    private void checkLine(int x, int y, int dx, int dy, int maxX, int maxY, CheckState[][] checkMap) {
+
+    }
+
 }

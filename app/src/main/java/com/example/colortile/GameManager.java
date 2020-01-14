@@ -12,7 +12,7 @@ import android.view.View;
 
 public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener, Runnable {
     static Long FPS = 60L;
-    static Float BOARD_MAERGIN_LEFT_AND_RIGHT = 10f;
+    static Float BOARD_MARGIN_LEFT_AND_RIGHT = 10f;
     static int BOARD_ROW_NUM = 13;
     static int BOARD_COLUMN_NUM = 10;
 
@@ -45,9 +45,9 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         this.width = (float) width;
         this.height = (float) height;
-        board.setSize(this.width - BOARD_MAERGIN_LEFT_AND_RIGHT * 2f);
+        board.setSize(this.width - BOARD_MARGIN_LEFT_AND_RIGHT * 2f);
         Float posY = (this.height - board.getHeight()) / 2f;
-        board.getTransform().setPosition(new PointF(BOARD_MAERGIN_LEFT_AND_RIGHT, posY));
+        board.getTransform().setPosition(new PointF(BOARD_MARGIN_LEFT_AND_RIGHT, posY));
     }
 
     @Override
@@ -84,15 +84,6 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
-            case MotionEvent.ACTION_MOVE:
-                PointF diff = new PointF(event.getX() - prePos.x, event.getY() - prePos.y);
-                PointF boardPos = board.getTransform().getPosition();
-                board.getTransform().setPosition(new PointF(boardPos.x + diff.x, boardPos.y + diff.y));
-                prePos = new PointF(event.getX(), event.getY());
-                break;
-            case MotionEvent.ACTION_DOWN:
-                prePos = new PointF(event.getX(), event.getY());
-                break;
             case MotionEvent.ACTION_UP:
                 board.onTouch(new PointF(event.getX(), event.getY()));
                 break;
