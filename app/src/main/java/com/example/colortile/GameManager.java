@@ -18,7 +18,6 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
 
     private Thread thread = new Thread(this);
     private Boolean isActive = false;
-    private Boolean isSurfaceActive = false;
     private SurfaceHolder holder;
 
     private Float height;
@@ -40,7 +39,6 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        isSurfaceActive = true;
     }
 
     @Override
@@ -54,7 +52,6 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        isSurfaceActive = false;
     }
 
     @Override
@@ -62,7 +59,7 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
         int frame = 0;
         while (true) {
             // バックグラウンド用のループ
-            if (!isActive || !isSurfaceActive) {
+            if (!isActive || !holder.getSurface().isValid()) {
                 System.out.println("Running on background");
                 try {
                     Thread.sleep(100);
@@ -104,6 +101,7 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
     }
 
     private void update() {
+        board.update();
     }
 
     private void draw() {

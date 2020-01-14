@@ -12,16 +12,10 @@ public class BoardManager extends GameObject {
     private Float height;
     private int rowNum;
     private int columnNum;
+
     private Float tileSize;
     private Tile[][] board;
 
-    public Float getWidth() {
-        return width;
-    }
-
-    public Float getHeight() {
-        return height;
-    }
 
     public void init(int rowNum, int columnNum) {
         this.rowNum = rowNum;
@@ -30,7 +24,7 @@ public class BoardManager extends GameObject {
         for (int row = 0; row < rowNum; row++) {
             for (int col = 0; col < columnNum; col++) {
                 board[row][col] = new Tile();
-                board[row][col].getTransform().setParent(transform);
+                board[row][col].getTransform().setParent(getTransform());
                 Tile.Type type = Tile.Type.NONE;
                 switch ((int) (Math.random() * 3)) {
                     case 0:
@@ -51,6 +45,14 @@ public class BoardManager extends GameObject {
         }
     }
 
+    public Float getWidth() {
+        return width;
+    }
+
+    public Float getHeight() {
+        return height;
+    }
+
     public void setSize(Float width) {
         this.width = width;
         tileSize = width / columnNum;
@@ -66,7 +68,7 @@ public class BoardManager extends GameObject {
 
     // ワールド座標から配列の位置を取得
     public Point worldToArrayIndex(PointF p) {
-        PointF lp = transform.worldToLocalPosition(p);
+        PointF lp = getTransform().worldToLocalPosition(p);
         int x = (int) Math.floor((lp.x / tileSize));
         int y = (int) Math.floor((lp.y / tileSize));
         if (x >= columnNum || y >= rowNum || x < 0 || y < 0) return null;
@@ -75,6 +77,7 @@ public class BoardManager extends GameObject {
 
     public void onTouch(PointF p) {
         Point index = worldToArrayIndex(p);
+        System.out.println(index);
         if (index == null) return;
         board[index.y][index.x].isExists = false;
     }
@@ -91,7 +94,7 @@ public class BoardManager extends GameObject {
                 } else {
                     paint.setColor(Color.parseColor("#eeeeee"));
                 }
-                PointF pos = transform.localToWorldPosition(new PointF(col * tileSize - tileSize * 1, row * tileSize - tileSize * 3));
+                PointF pos = getTransform().localToWorldPosition(new PointF(col * tileSize - tileSize * 1, row * tileSize - tileSize * 3));
                 canvas.drawRect(pos.x, pos.y, pos.x + tileSize, pos.y + tileSize, paint);
             }
         }
@@ -101,6 +104,13 @@ public class BoardManager extends GameObject {
             for (int col = 0; col < columnNum; col++) {
                 if (!board[row][col].isExists) continue;
                 board[row][col].draw(canvas);
+            }
+        }
+    }
+
+    public void update() {
+        for (int row = 0; row < rowNum; row++) {
+            for (int col = 0; col < columnNum; col++) {
             }
         }
     }

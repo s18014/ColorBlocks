@@ -5,7 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
-class Tile extends GameObject{
+class Tile extends GameObject {
     static Float PADDING = 5f;
 
     public Boolean isExists = false;
@@ -43,11 +43,7 @@ class Tile extends GameObject{
             case NONE:
                 break;
         }
-        PointF pos = transform.getPosition();
+        PointF pos = getTransform().getPosition();
         canvas.drawRoundRect(pos.x + PADDING, pos.y + PADDING, pos.x + size - PADDING, pos.y + size - PADDING, 10f, 10f, paint);
-    }
-
-    public void moveTo(PointF p) {
-        transform.setPosition(p);
     }
 }

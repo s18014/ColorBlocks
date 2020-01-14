@@ -1,7 +1,6 @@
 package com.example.colortile;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.graphics.Point;
 import android.os.Bundle;
@@ -49,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void setMargin() {
         int height = getNavigationBarHeight();
-        ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
         SurfaceView surfaceView = findViewById(R.id.surfaceView);
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) surfaceView.getLayoutParams();
         params.setMargins(0, height, 0, height);
