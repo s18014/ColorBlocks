@@ -10,7 +10,8 @@ public class BoardManager extends GameObject {
 
     enum CheckState {
         NONE,
-        CHECKED
+        CHECKED,
+        EXISTS
     }
 
     private Float width;
@@ -80,11 +81,29 @@ public class BoardManager extends GameObject {
         return new Point(x, y);
     }
 
+    public PointF arrayIndexToWorld(Point index) {
+        PointF lp = new PointF(index.x * tileSize, index.y * tileSize);
+        return getTransform().localToWorldPosition(lp);
+    }
+
     public void onTouch(PointF p) {
         Point index = worldToArrayIndex(p);
         System.out.println(index);
         if (index == null) return;
-        board[index.y][index.x].isExists = false;
+        CheckState[][] checkedMap = findTilesOnTouched(index.x, index.y);
+
+        // TODO: deleteTilesメソッドに実装
+        if (checkedMap == null) return;
+        for (int row = 0; row < rowNum; row++) {
+            for (int col = 0; col < columnNum; col++) {
+                if (checkedMap[row][col] == CheckState.EXISTS) {
+                    board[row][col].isExists = false;
+                }
+            }
+        }
+
+        // Test
+        findRoute(0, 0, index.x, index.y, checkedMap);
     }
 
 
@@ -120,8 +139,35 @@ public class BoardManager extends GameObject {
         }
     }
 
-    private void checkLine(int x, int y, int dx, int dy, int maxX, int maxY, CheckState[][] checkMap) {
+    private CheckState[][] findTilesOnTouched(int x, int y) {
+        CheckState[][] checkedMap = new CheckState[rowNum][columnNum];
+        if (board[y][x].isExists) return null;
+        // 開始地点から4方向に走査
+        findTileOnStraightLine(x, y, 0, 1, checkedMap);
+        findTileOnStraightLine(x, y, 0, -1, checkedMap);
+        findTileOnStraightLine(x, y, 1, 0, checkedMap);
+        findTileOnStraightLine(x, y, -1, 0, checkedMap);
+        return checkedMap;
+    }
 
+    private void findTileOnStraightLine(int x, int y, int dx, int dy, CheckState[][] checkMap) {
+        if (board[y][x].isExists) {
+            checkMap[y][x] = CheckState.EXISTS;
+        } else {
+            checkMap[y][x] = CheckState.CHECKED;
+        }
+        if (x + dx < columnNum && x + dx > -1 && y + dy < rowNum && y + dy > -1 && !board[y][x].isExists) {
+            findTileOnStraightLine(x + dx, y + dy, dx, dy, checkMap);
+        }
+    }
+
+    private void findRoute(int fromX, int fromY, int toX, int toY, CheckState[][] checkMap) {
+        int dist = Math.max(Math.abs(fromX - toX), Math.abs(fromY - toY));
+        PointF dir = new PointF(toX - fromX, toY - fromY);
+        for (int i = 1; i < dist; i++) {
+            float ratio = (float)i / dist;
+            System.out.println(new Point((int) (dir.x * ratio), (int) (dir.y * ratio)));
+        }
     }
 
 }
