@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 
+import java.util.HashMap;
+
 public class BoardManager extends GameObject {
 
     enum CheckState {
@@ -21,11 +23,14 @@ public class BoardManager extends GameObject {
 
     private Float tileSize;
     private Tile[][] board;
+    private DotEffectSystem dotEffectSystem = new DotEffectSystem();
 
 
     public void init(int rowNum, int columnNum) {
         this.rowNum = rowNum;
         this.columnNum = columnNum;
+        dotEffectSystem.getTransform().setParent(getTransform());
+        dotEffectSystem.init();
         board = new Tile[rowNum][columnNum];
         for (int row = 0; row < rowNum; row++) {
             for (int col = 0; col < columnNum; col++) {
@@ -44,7 +49,7 @@ public class BoardManager extends GameObject {
                         break;
                 }
                 board[row][col].init(type);
-                if (Math.random() < 0.7) {
+                if (Math.random() < 0.2) {
                     board[row][col].isExists = true;
                 }
             }
@@ -60,6 +65,7 @@ public class BoardManager extends GameObject {
     }
 
     public void setSize(Float width) {
+        dotEffectSystem.setSize(15f);
         this.width = width;
         tileSize = width / columnNum;
         this.height = tileSize * rowNum;
@@ -70,7 +76,6 @@ public class BoardManager extends GameObject {
             }
         }
     }
-
 
     // ワールド座標から配列の位置を取得
     public Point worldToArrayIndex(PointF p) {
@@ -90,20 +95,12 @@ public class BoardManager extends GameObject {
         Point index = worldToArrayIndex(p);
         System.out.println(index);
         if (index == null) return;
-        CheckState[][] checkedMap = findTilesOnTouched(index.x, index.y);
-
-        // TODO: deleteTilesメソッドに実装
-        if (checkedMap == null) return;
-        for (int row = 0; row < rowNum; row++) {
-            for (int col = 0; col < columnNum; col++) {
-                if (checkedMap[row][col] == CheckState.EXISTS) {
-                    board[row][col].isExists = false;
-                }
-            }
-        }
-
-        // Test
-        findRoute(0, 0, index.x, index.y, checkedMap);
+        CheckState[][] foundTilesMap = findTiles(index.x, index.y);
+        if (foundTilesMap == null) return;
+        CheckState[][] deletableTilesMap = findDeletableTiles(foundTilesMap);
+        if (deletableTilesMap == null) return;
+        deleteTiles(deletableTilesMap, index.x, index.y);
+        System.out.println(judgeJum());
     }
 
 
@@ -123,23 +120,20 @@ public class BoardManager extends GameObject {
             }
         }
 
-
         for (int row = 0; row < rowNum; row++) {
             for (int col = 0; col < columnNum; col++) {
                 if (!board[row][col].isExists) continue;
                 board[row][col].draw(canvas);
             }
         }
+        dotEffectSystem.draw(canvas);
     }
 
     public void update() {
-        for (int row = 0; row < rowNum; row++) {
-            for (int col = 0; col < columnNum; col++) {
-            }
-        }
+        dotEffectSystem.update();
     }
 
-    private CheckState[][] findTilesOnTouched(int x, int y) {
+    private CheckState[][] findTiles(int x, int y) {
         CheckState[][] checkedMap = new CheckState[rowNum][columnNum];
         if (board[y][x].isExists) return null;
         // 開始地点から4方向に走査
@@ -161,13 +155,73 @@ public class BoardManager extends GameObject {
         }
     }
 
-    private void findRoute(int fromX, int fromY, int toX, int toY, CheckState[][] checkMap) {
-        int dist = Math.max(Math.abs(fromX - toX), Math.abs(fromY - toY));
-        PointF dir = new PointF(toX - fromX, toY - fromY);
-        for (int i = 1; i < dist; i++) {
-            float ratio = (float)i / dist;
-            System.out.println(new Point((int) (dir.x * ratio), (int) (dir.y * ratio)));
+    private CheckState[][] findDeletableTiles(CheckState[][] checkedMap) {
+        Boolean isExistsDeletableTiles = false;
+        CheckState[][] deletableTilesMap = new CheckState[rowNum][columnNum];
+        HashMap<Tile.Type, Integer> typeMap = new HashMap<>();
+        for (int row = 0; row < rowNum; row++) {
+            for (int col = 0; col < columnNum; col++) {
+                if (checkedMap[row][col] == CheckState.EXISTS) {
+                    Tile.Type type = board[row][col].type;
+                    int value = typeMap.getOrDefault(type, 0);
+                    if (value > 0) isExistsDeletableTiles = true;
+                    typeMap.put(type, value + 1);
+                }
+            }
+        }
+
+        if (!isExistsDeletableTiles) return null;
+
+        for (int row = 0; row < rowNum; row++) {
+            for (int col = 0; col < columnNum; col++) {
+                if (checkedMap[row][col] == CheckState.EXISTS) {
+                    Tile.Type type = board[row][col].type;
+                    int value = typeMap.getOrDefault(type, 0);
+                    if (value > 1) {
+                        deletableTilesMap[row][col] = CheckState.CHECKED;
+                    }
+                }
+            }
+        }
+
+        return deletableTilesMap;
+    }
+
+    private void deleteTiles(CheckState[][] deletableTilesMap, int x, int y) {
+        for (int row = 0; row < rowNum; row++) {
+            for (int col = 0; col < columnNum; col++) {
+                if (deletableTilesMap[row][col] == CheckState.CHECKED) {
+                    board[row][col].isExists = false;
+                    findRoute(x, y, col, row);
+                }
+            }
         }
     }
 
+    private void findRoute(int fromX, int fromY, int toX, int toY) {
+        int dist = Math.max(Math.abs(fromX - toX), Math.abs(fromY - toY));
+        PointF dir = new PointF(toX - fromX, toY - fromY);
+        for (int i = 0; i <= dist; i++) {
+            float ratio = (float)i / dist;
+            Point p = new Point((int) (dir.x * ratio) + fromX, (int) (dir.y * ratio) + fromY);
+            PointF pos = arrayIndexToWorld(p);
+            pos.x += tileSize / 2f;
+            pos.y += tileSize / 2f;
+            dotEffectSystem.add(pos);
+        }
+    }
+
+    private Boolean judgeJum() {
+        for (int row = 0; row < rowNum; row++) {
+            for (int col = 0; col < columnNum; col++) {
+                if (board[row][col].isExists) continue;
+                CheckState[][] foundTilesMap = findTiles(col, row);
+                if (foundTilesMap == null) continue;
+                CheckState[][] deletableTilesMap = findDeletableTiles(foundTilesMap);
+                if (deletableTilesMap == null) continue;
+                return true;
+            }
+        }
+        return false;
+    }
 }
