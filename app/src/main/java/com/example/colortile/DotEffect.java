@@ -26,7 +26,7 @@ public class DotEffect extends GameObject {
         float ratio = (float) time / endTime;
         if (ratio > 1f) ratio = 1f;
         Paint paint = new Paint();
-        paint.setColor(Color.argb((int) (255f * (1 -ratio)), 100, 100, 100));
+        paint.setColor(Color.argb((int) (255f * (1 -ratio)), 150, 150, 150));
         PointF pos = getTransform().getPosition();
         canvas.drawCircle(pos.x, pos.y, size, paint);
     }

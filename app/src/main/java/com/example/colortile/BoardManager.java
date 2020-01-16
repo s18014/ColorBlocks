@@ -100,7 +100,7 @@ public class BoardManager extends GameObject {
         CheckState[][] deletableTilesMap = findDeletableTiles(foundTilesMap);
         if (deletableTilesMap == null) return;
         deleteTiles(deletableTilesMap, index.x, index.y);
-        System.out.println(judgeJum());
+        System.out.println(isExistsDeletableTiles());
     }
 
 
@@ -127,6 +127,14 @@ public class BoardManager extends GameObject {
             }
         }
         dotEffectSystem.draw(canvas);
+
+        // TEST
+        if (!isExistsDeletableTiles()) {
+            paint.setColor(Color.parseColor("#999999"));
+            paint.setTextSize(width / 8f);
+            paint.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText("GAME OVER", width / 2f, height / 2f, paint);
+        }
     }
 
     public void update() {
@@ -211,7 +219,7 @@ public class BoardManager extends GameObject {
         }
     }
 
-    private Boolean judgeJum() {
+    private Boolean isExistsDeletableTiles() {
         for (int row = 0; row < rowNum; row++) {
             for (int col = 0; col < columnNum; col++) {
                 if (board[row][col].isExists) continue;
