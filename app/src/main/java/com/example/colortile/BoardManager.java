@@ -196,26 +196,35 @@ public class BoardManager extends GameObject {
     }
 
     private void deleteTiles(CheckState[][] deletableTilesMap, int x, int y) {
+        CheckState[][] foundRouteMap = new CheckState[rowNum][columnNum];
         for (int row = 0; row < rowNum; row++) {
             for (int col = 0; col < columnNum; col++) {
                 if (deletableTilesMap[row][col] == CheckState.CHECKED) {
                     board[row][col].isExists = false;
-                    findRoute(x, y, col, row);
+                    findRoute(x, y, col, row, foundRouteMap);
+                }
+            }
+        }
+
+        for (int row = 0; row < rowNum; row++) {
+            for (int col = 0; col < columnNum; col++) {
+                if (foundRouteMap[row][col] == CheckState.CHECKED) {
+                    PointF pos = arrayIndexToWorld(new Point(col, row));
+                    pos.x += tileSize / 2f;
+                    pos.y += tileSize / 2f;
+                    dotEffectSystem.add(pos);
                 }
             }
         }
     }
 
-    private void findRoute(int fromX, int fromY, int toX, int toY) {
+    private void findRoute(int fromX, int fromY, int toX, int toY, CheckState[][] checkMap) {
         int dist = Math.max(Math.abs(fromX - toX), Math.abs(fromY - toY));
         PointF dir = new PointF(toX - fromX, toY - fromY);
         for (int i = 0; i <= dist; i++) {
             float ratio = (float)i / dist;
             Point p = new Point((int) (dir.x * ratio) + fromX, (int) (dir.y * ratio) + fromY);
-            PointF pos = arrayIndexToWorld(p);
-            pos.x += tileSize / 2f;
-            pos.y += tileSize / 2f;
-            dotEffectSystem.add(pos);
+            checkMap[p.y][p.x] = CheckState.CHECKED;
         }
     }
 
