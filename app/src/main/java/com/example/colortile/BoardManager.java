@@ -5,32 +5,44 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.view.MotionEvent;
+import android.widget.ListView;
 
+import java.io.PipedOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 public class BoardManager extends GameObject {
 
     enum CheckState {
         NONE,
         CHECKED,
-        EXISTS
+        EXISTS,
+        PUTABLE,
+        PATH
     }
 
     private Float width;
     private Float height;
     private int rowNum;
     private int columnNum;
+    private boolean isPressing = false;
+    private PointF pressingPoint;
 
     private Float tileSize;
     private Tile[][] board;
     private DotEffectSystem dotEffectSystem = new DotEffectSystem();
-
 
     public void init(int rowNum, int columnNum) {
         this.rowNum = rowNum;
         this.columnNum = columnNum;
         dotEffectSystem.getTransform().setParent(getTransform());
         dotEffectSystem.init();
+        createTiles();
+        /*
         board = new Tile[rowNum][columnNum];
         for (int row = 0; row < rowNum; row++) {
             for (int col = 0; col < columnNum; col++) {
@@ -52,8 +64,10 @@ public class BoardManager extends GameObject {
                 if (Math.random() < 0.2) {
                     board[row][col].isExists = true;
                 }
+
             }
         }
+         */
     }
 
     public Float getWidth() {
@@ -91,17 +105,30 @@ public class BoardManager extends GameObject {
         return getTransform().localToWorldPosition(lp);
     }
 
-    public void onTouch(PointF p) {
-        Point index = worldToArrayIndex(p);
-        System.out.println(index);
-        if (index == null) return;
-        CheckState[][] foundTilesMap = findTiles(index.x, index.y);
-        if (foundTilesMap == null) return;
-        CheckState[][] deletableTilesMap = findDeletableTiles(foundTilesMap);
-        if (deletableTilesMap == null) return;
-        deleteTiles(deletableTilesMap, index.x, index.y);
-        System.out.println(isExistsDeletableTiles());
-    }
+    public void onTouch(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_UP: {
+                isPressing = false;
+                PointF p = new PointF(event.getX(), event.getY());
+                Point index = worldToArrayIndex(p);
+                if (index == null) return;
+                CheckState[][] foundTilesMap = findTiles(index.x, index.y);
+                if (foundTilesMap == null) return;
+                CheckState[][] deletableTilesMap = findDeletableTiles(foundTilesMap);
+                if (deletableTilesMap == null) return;
+                deleteTiles(deletableTilesMap, index.x, index.y);
+                break;
+            }
+            case MotionEvent.ACTION_DOWN: {
+                isPressing = true;
+                break;
+            }
+            case MotionEvent.ACTION_MOVE: {
+                pressingPoint = new PointF(event.getX(), event.getY());
+                break;
+            }
+        }
+   }
 
 
     public void draw(Canvas canvas) {
@@ -240,5 +267,115 @@ public class BoardManager extends GameObject {
             }
         }
         return false;
+    }
+
+    private List<Point> findPutablePoint4way(int x, int y) {
+        List<Point> pointList = new ArrayList<>();
+        findPutablePoint(x, y, 0, 1, 1, 2, pointList);
+        findPutablePoint(x, y, 0, -1, 1, 2, pointList);
+        findPutablePoint(x, y, 1, 0, 1, 2, pointList);
+        findPutablePoint(x, y, -1, 0, 1, 2, pointList);
+        return pointList;
+    }
+
+    private void findPutablePoint(int x, int y, int dx, int dy, int branchCount, int ignoreCount, List<Point> pointList) {
+        if (!board[y][x].isExists && ignoreCount <= 0) {
+            if (pointList.indexOf(new Point(x, y)) == -1) {
+                pointList.add(new Point(x, y));
+            }
+       }
+        if (branchCount > 0 && ignoreCount <= 1) {
+            PointF right = rotate2D(new PointF(dx, dy), -90);
+            PointF left = rotate2D(new PointF(dx, dy), 90);
+            findPutablePoint(x, y, (int) right.x, (int) right.y, branchCount - 1, 1, pointList);
+            findPutablePoint(x, y, (int) left.x, (int) left.y, branchCount - 1, 1, pointList);
+        }
+        ignoreCount -= 1;
+        if (x + dx < columnNum && x + dx > -1 && y + dy < rowNum && y + dy > -1 && !board[y][x].isExists) {
+            findPutablePoint(x + dx, y + dy, dx, dy, branchCount, ignoreCount, pointList);
+        }
+    }
+
+    private void createTiles() {
+        board = new Tile[rowNum][columnNum];
+        for (int row = 0; row < rowNum; row++) {
+            for (int col = 0; col < columnNum; col++) {
+                board[row][col] = new Tile();
+                board[row][col].getTransform().setParent(getTransform());
+                Tile.Type type = Tile.Type.NONE;
+                board[row][col].init(type);
+            }
+        }
+
+        List<Point> blankPoints = new ArrayList<>();
+        for (int row = 0; row < rowNum; row++) {
+            for (int col = 0; col < columnNum; col++) {
+                blankPoints.add(new Point(col, row));
+            }
+        }
+
+        Map<Tile.Type, Integer> restTiles = new HashMap<>();
+        restTiles.put(Tile.Type.BLUE, 15);
+        restTiles.put(Tile.Type.GREEN, 15);
+        restTiles.put(Tile.Type.RED, 15);
+        for (Tile.Type type : restTiles.keySet()) {
+            for (int i = 0; i < restTiles.get(type); i++) {
+                boolean notPuted = true;
+                while (notPuted) {
+                    int rand = (int) (Math.random() * (blankPoints.size()-1));
+                    Point a = blankPoints.get(rand);
+                    blankPoints.remove(rand);
+                    List<Point> putablePoints = findPutablePoint4way(a.x, a.y);
+                    if (putablePoints.size() > 0) {
+                        rand = (int) (Math.random() * (putablePoints.size()-1));
+                        Point b = putablePoints.get(rand);
+                        board[a.y][a.x].isExists = true;
+                        board[b.y][b.x].isExists = true;
+                        board[a.y][a.x].init(type);
+                        board[b.y][b.x].init(type);
+                        notPuted = false;
+                    }
+                }
+           }
+        }
+    }
+
+    private PointF rotate2D(PointF p, double angle) {
+        double red = Math.toRadians(angle);
+        double cos = red == 90 || red == 270 ? 0 : Math.cos(red);
+        double sin = red == 90 || red == 270 ? 0 : Math.sin(red);
+        float x = (float) (p.x * cos - p.y * sin);
+        float y = (float) (p.x * sin + p.y * cos);
+        return new PointF(x, y);
+    }
+
+    private void test() {
+        if (!isPressing || pressingPoint == null) return;
+        Point index = worldToArrayIndex(pressingPoint);
+        if (index == null) return;
+        CheckState[][] foundTilesMap = findTiles(index.x, index.y);
+        if (foundTilesMap == null) return;
+        CheckState[][] deletableTilesMap = findDeletableTiles(foundTilesMap);
+        if (deletableTilesMap == null) return;
+
+        CheckState[][] foundRouteMap = new CheckState[rowNum][columnNum];
+        for (int row = 0; row < rowNum; row++) {
+            for (int col = 0; col < columnNum; col++) {
+                if (deletableTilesMap[row][col] == CheckState.CHECKED) {
+                    findRoute(index.x, index.y, col, row, foundRouteMap);
+                }
+            }
+        }
+
+        for (int row = 0; row < rowNum; row++) {
+            for (int col = 0; col < columnNum; col++) {
+                if (foundRouteMap[row][col] == CheckState.CHECKED) {
+                    PointF pos = arrayIndexToWorld(new Point(col, row));
+                    pos.x += tileSize / 2f;
+                    pos.y += tileSize / 2f;
+                    dotEffectSystem.add(pos);
+                }
+            }
+        }
     }
 }

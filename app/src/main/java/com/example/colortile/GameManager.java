@@ -83,11 +83,7 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_UP:
-                board.onTouch(new PointF(event.getX(), event.getY()));
-                break;
-        }
+        board.onTouch(event);
         return true;
     }
 
