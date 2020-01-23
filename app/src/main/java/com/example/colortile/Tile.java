@@ -14,10 +14,12 @@ class Tile extends GameObject {
     private Float size = 0f;
 
     enum Type {
-        RED,
-        GREEN,
-        BLUE,
-        NONE
+        NONE,
+        A,
+        B,
+        C,
+        D,
+        E
     }
 
     public void init(Type type) {
@@ -31,14 +33,20 @@ class Tile extends GameObject {
     public void draw(Canvas canvas) {
         Paint paint = new Paint();
         switch (type) {
-            case RED:
-                paint.setColor(Color.parseColor("#ee5555"));
+            case A:
+                paint.setColor(Color.parseColor("#ee88b7"));
                 break;
-            case GREEN:
-                paint.setColor(Color.parseColor("#55ee55"));
+            case B:
+                paint.setColor(Color.parseColor("#ffd700"));
                 break;
-            case BLUE:
-                paint.setColor(Color.parseColor("#5555ee"));
+            case C:
+                paint.setColor(Color.parseColor("#a0e3cd"));
+                break;
+            case D:
+                paint.setColor(Color.parseColor("#98cde8"));
+                break;
+            case E:
+                paint.setColor(Color.parseColor("#d3b0e8"));
                 break;
             case NONE:
                 break;

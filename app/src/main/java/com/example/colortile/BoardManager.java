@@ -312,9 +312,11 @@ public class BoardManager extends GameObject {
         }
 
         Map<Tile.Type, Integer> restTilePears = new HashMap<>();
-        restTilePears.put(Tile.Type.BLUE, 15);
-        restTilePears.put(Tile.Type.GREEN, 20);
-        restTilePears.put(Tile.Type.RED, 20);
+        restTilePears.put(Tile.Type.A, 10);
+        restTilePears.put(Tile.Type.B, 10);
+        restTilePears.put(Tile.Type.C, 10);
+        restTilePears.put(Tile.Type.D, 10);
+        restTilePears.put(Tile.Type.E, 10);
         for (Tile.Type type : restTilePears.keySet()) {
             for (int i = 0; i < restTilePears.get(type); i++) {
                 System.out.println(blankPoints.size());
