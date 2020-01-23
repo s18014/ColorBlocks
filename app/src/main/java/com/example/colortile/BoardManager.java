@@ -6,12 +6,9 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.view.MotionEvent;
-import android.widget.ListView;
 
-import java.io.PipedOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -314,29 +311,34 @@ public class BoardManager extends GameObject {
             }
         }
 
-        Map<Tile.Type, Integer> restTiles = new HashMap<>();
-        restTiles.put(Tile.Type.BLUE, 15);
-        restTiles.put(Tile.Type.GREEN, 15);
-        restTiles.put(Tile.Type.RED, 15);
-        for (Tile.Type type : restTiles.keySet()) {
-            for (int i = 0; i < restTiles.get(type); i++) {
-                boolean notPuted = true;
-                while (notPuted) {
-                    int rand = (int) (Math.random() * (blankPoints.size()-1));
-                    Point a = blankPoints.get(rand);
+        Map<Tile.Type, Integer> restTilePears = new HashMap<>();
+        restTilePears.put(Tile.Type.BLUE, 15);
+        restTilePears.put(Tile.Type.GREEN, 20);
+        restTilePears.put(Tile.Type.RED, 20);
+        for (Tile.Type type : restTilePears.keySet()) {
+            for (int i = 0; i < restTilePears.get(type); i++) {
+                System.out.println(blankPoints.size());
+                int rand = (int) (Math.random() * (blankPoints.size()-1));
+                Point a = blankPoints.get(rand);
+                blankPoints.remove(rand);
+                rand = (int) (Math.random() * (blankPoints.size()-1));
+                Point b = blankPoints.get(rand);
+
+                List<Point> putablePoints = findPutablePoint4way(a.x, a.y);
+                if (putablePoints.size() > 0) {
+                    rand = (int) (Math.random() * (putablePoints.size()-1));
+                    b = putablePoints.get(rand);
+                    int index = blankPoints.indexOf(b);
+                    blankPoints.remove(index);
+                } else {
                     blankPoints.remove(rand);
-                    List<Point> putablePoints = findPutablePoint4way(a.x, a.y);
-                    if (putablePoints.size() > 0) {
-                        rand = (int) (Math.random() * (putablePoints.size()-1));
-                        Point b = putablePoints.get(rand);
-                        board[a.y][a.x].isExists = true;
-                        board[b.y][b.x].isExists = true;
-                        board[a.y][a.x].init(type);
-                        board[b.y][b.x].init(type);
-                        notPuted = false;
-                    }
                 }
-           }
+
+                board[a.y][a.x].isExists = true;
+                board[b.y][b.x].isExists = true;
+                board[a.y][a.x].init(type);
+                board[b.y][b.x].init(type);
+            }
         }
     }
 
@@ -349,7 +351,7 @@ public class BoardManager extends GameObject {
         return new PointF(x, y);
     }
 
-    private void test() {
+    private void showDeletableTiles() {
         if (!isPressing || pressingPoint == null) return;
         Point index = worldToArrayIndex(pressingPoint);
         if (index == null) return;
