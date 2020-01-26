@@ -1,11 +1,13 @@
 package com.example.colortile;
 
+import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.view.MotionEvent;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,9 +78,9 @@ public class BoardManager extends GameObject {
     }
 
     public void setSize(Float width) {
-        dotEffectSystem.setSize(15f);
         this.width = width;
         tileSize = width / columnNum;
+        dotEffectSystem.setSize(tileSize / 7f);
         this.height = tileSize * rowNum;
         for (int row = 0; row < rowNum; row++) {
             for (int col = 0; col < columnNum; col++) {

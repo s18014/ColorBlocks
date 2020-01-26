@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ColorTile</string>
+    <string name="back">戻る</string>
+    <string name="menu">メニュー</string>
 </resources>
