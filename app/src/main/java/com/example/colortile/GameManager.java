@@ -25,9 +25,6 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
 
     private BoardManager board = new BoardManager();
 
-    // TEST
-    private PointF prePos;
-
     GameManager(SurfaceView surfaceView) {
         holder = surfaceView.getHolder();
         holder.addCallback(this);
