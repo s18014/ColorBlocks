@@ -8,14 +8,17 @@ import androidx.fragment.app.FragmentTransaction;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Display;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-public class MainActivity extends AppCompatActivity implements GameFragment.OnFragmentInteractionListener, TitleFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements
+        IFragmentChanger,
+        GameFragment.OnFragmentInteractionListener,
+        TitleFragment.OnFragmentInteractionListener,
+        ResultFragment.OnFragmentInteractionListener
+{
     static int FLAGS = View.SYSTEM_UI_FLAG_FULLSCREEN |
             View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
             View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
@@ -23,9 +26,7 @@ public class MainActivity extends AppCompatActivity implements GameFragment.OnFr
             View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
             View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
 
-    // private GameManager gameManager;
-    private GameFragment gameFragment;
-    private Handler handler = new Handler();
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,37 +34,33 @@ public class MainActivity extends AppCompatActivity implements GameFragment.OnFr
         setContentView(R.layout.activity_main);
         setFlags();
         setMargin();
-        /*
-        SurfaceView surfaceView = findViewById(R.id.surfaceView);
-        gameManager = new GameManager(surfaceView);
-         */
-        Fragment gameFragment = new TitleFragment();
-        FragmentManager fragmentManager = this.getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.container, gameFragment)
-            .addToBackStack(null)
-            .commit();
+        changeFragment(new TitleFragment());
     }
 
+    @Override
     public void changeFragment(Fragment fragment) {
         FragmentManager fragmentManager = this.getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.container, fragment)
-                .addToBackStack(null)
-                .commit();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.container, fragment).commit();
+    }
+
+    // TODO: フラグメントをポップアップ表示したい
+    @Override
+    public void pushFragment(Fragment fragment) {
+        FragmentManager fragmentManager = this.getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(R.id.container,fragment).commit();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // gameManager.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         setFlags();
-        // gameManager.onResume();
     }
 
     private void setFlags() {
@@ -72,10 +69,10 @@ public class MainActivity extends AppCompatActivity implements GameFragment.OnFr
 
     private void setMargin() {
         int height = getNavigationBarHeight();
-        FrameLayout surfaceView = findViewById(R.id.container);
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) surfaceView.getLayoutParams();
+        FrameLayout frameLayout = findViewById(R.id.container);
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) frameLayout.getLayoutParams();
         params.setMargins(0, height, 0, height);
-        surfaceView.setLayoutParams(params);
+        frameLayout.setLayoutParams(params);
     }
 
     private int getNavigationBarHeight() {

@@ -1,11 +1,14 @@
 package com.example.colortile;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MotionEvent;
 import android.widget.Button;
 
@@ -24,6 +27,7 @@ public class BoardManager extends GameObject {
         PATH
     }
 
+    private Context context;
     private Float width;
     private Float height;
     private int rowNum;
@@ -35,38 +39,18 @@ public class BoardManager extends GameObject {
     private Tile[][] board;
     private DotEffectSystem dotEffectSystem = new DotEffectSystem();
 
+    private int score = 0;
+
+    BoardManager(Context context) {
+        this.context = context;
+    }
+
     public void init(int rowNum, int columnNum) {
         this.rowNum = rowNum;
         this.columnNum = columnNum;
         dotEffectSystem.getTransform().setParent(getTransform());
         dotEffectSystem.init();
         createTiles();
-        /*
-        board = new Tile[rowNum][columnNum];
-        for (int row = 0; row < rowNum; row++) {
-            for (int col = 0; col < columnNum; col++) {
-                board[row][col] = new Tile();
-                board[row][col].getTransform().setParent(getTransform());
-                Tile.Type type = Tile.Type.NONE;
-                switch ((int) (Math.random() * 3)) {
-                    case 0:
-                        type = Tile.Type.RED;
-                        break;
-                    case 1:
-                        type = Tile.Type.GREEN;
-                        break;
-                    case 2:
-                        type = Tile.Type.BLUE;
-                        break;
-                }
-                board[row][col].init(type);
-                if (Math.random() < 0.2) {
-                    board[row][col].isExists = true;
-                }
-
-            }
-        }
-         */
     }
 
     public Float getWidth() {
@@ -153,14 +137,6 @@ public class BoardManager extends GameObject {
             }
         }
         dotEffectSystem.draw(canvas);
-
-        // TEST
-        if (!isExistsDeletableTiles()) {
-            paint.setColor(Color.parseColor("#999999"));
-            paint.setTextSize(width / 8f);
-            paint.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText("GAME OVER", width / 2f, height / 2f, paint);
-        }
     }
 
     public void update() {
@@ -227,6 +203,7 @@ public class BoardManager extends GameObject {
             for (int col = 0; col < columnNum; col++) {
                 if (deletableTilesMap[row][col] == CheckState.CHECKED) {
                     board[row][col].isExists = false;
+                    score++;
                     findRoute(x, y, col, row, foundRouteMap);
                 }
             }
@@ -314,11 +291,11 @@ public class BoardManager extends GameObject {
         }
 
         Map<Tile.Type, Integer> restTilePears = new HashMap<>();
-        restTilePears.put(Tile.Type.A, 10);
-        restTilePears.put(Tile.Type.B, 10);
-        restTilePears.put(Tile.Type.C, 10);
-        restTilePears.put(Tile.Type.D, 10);
-        restTilePears.put(Tile.Type.E, 10);
+        restTilePears.put(Tile.Type.A, 1);
+        restTilePears.put(Tile.Type.B, 1);
+        restTilePears.put(Tile.Type.C, 1);
+        restTilePears.put(Tile.Type.D, 1);
+        restTilePears.put(Tile.Type.E, 1);
         for (Tile.Type type : restTilePears.keySet()) {
             for (int i = 0; i < restTilePears.get(type); i++) {
                 System.out.println(blankPoints.size());
@@ -355,6 +332,15 @@ public class BoardManager extends GameObject {
         return new PointF(x, y);
     }
 
+    public boolean isGameOver() {
+        return !isExistsDeletableTiles();
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    /*
     private void showDeletableTiles() {
         if (!isPressing || pressingPoint == null) return;
         Point index = worldToArrayIndex(pressingPoint);
@@ -384,4 +370,6 @@ public class BoardManager extends GameObject {
             }
         }
     }
+     */
+
 }

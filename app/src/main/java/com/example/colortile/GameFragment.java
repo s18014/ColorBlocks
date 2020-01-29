@@ -72,7 +72,7 @@ public class GameFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_game, container, false);
 
         SurfaceView surfaceView = view.findViewById(R.id.gameSurfaceView);
-        gameManager = new GameManager(surfaceView);
+        gameManager = new GameManager(getContext(), surfaceView);
         return view;
     }
 
@@ -110,6 +110,12 @@ public class GameFragment extends Fragment {
     public void onResume() {
         super.onResume();
         gameManager.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        gameManager.onDestroy();
     }
 
     /**

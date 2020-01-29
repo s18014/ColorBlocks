@@ -1,13 +1,18 @@
 package com.example.colortile;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.PointF;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+
+import androidx.fragment.app.Fragment;
 
 
 public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener, Runnable {
@@ -16,6 +21,7 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
     static int BOARD_ROW_NUM = 13;
     static int BOARD_COLUMN_NUM = 10;
 
+    private Context context;
     private Thread thread = new Thread(this);
     private Boolean isActive = false;
     private SurfaceHolder holder;
@@ -23,9 +29,12 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
     private Float height;
     private Float width;
 
-    private BoardManager board = new BoardManager();
+    private BoardManager board;
+    private boolean lock = false;
 
-    GameManager(SurfaceView surfaceView) {
+    GameManager(Context context, SurfaceView surfaceView) {
+        this.context = context;
+        board = new BoardManager(context);
         holder = surfaceView.getHolder();
         holder.addCallback(this);
         surfaceView.setOnTouchListener(this);
@@ -54,7 +63,7 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
     @Override
     public void run() {
         int frame = 0;
-        while (true) {
+        while (thread != null) {
             // バックグラウンド用のループ
             if (!isActive || !holder.getSurface().isValid()) {
                 System.out.println("Running on background");
@@ -86,6 +95,20 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
 
     private void update() {
         board.update();
+        if (board.isGameOver() && !lock) {
+            lock = true;
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("score", board.getScore());
+                    Fragment fragment = new ResultFragment();
+                    fragment.setArguments(bundle);
+                    ((IFragmentChanger) context).pushFragment(fragment);
+                }
+            }, 100);
+        }
     }
 
     private void draw() {
@@ -108,4 +131,7 @@ public class GameManager implements SurfaceHolder.Callback, View.OnTouchListener
         isActive = false;
     }
 
+    public void onDestroy() {
+        thread = null;
+    }
 }

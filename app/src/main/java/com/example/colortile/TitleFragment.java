@@ -70,17 +70,11 @@ public class TitleFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_title, container, false);
-        Button btn = view.findViewById(R.id.testButton);
+        Button btn = view.findViewById(R.id.startButton);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment gameFragment = new GameFragment();
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.container, gameFragment)
-                        .addToBackStack(null)
-                        .commit();
-
+                ((IFragmentChanger) getActivity()).changeFragment(new GameFragment());
             }
         });
         return view;
