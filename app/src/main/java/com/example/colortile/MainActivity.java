@@ -1,10 +1,14 @@
 package com.example.colortile;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
             View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
             View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
 
-    private GameManager gameManager;
+    private GameSurfaceView gameSurfaceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,21 +29,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setFlags();
         setMargin();
-        SurfaceView surfaceView = findViewById(R.id.surfaceView);
-        gameManager = new GameManager(surfaceView);
+        gameSurfaceView = new GameSurfaceView(this);
+        setContentView(gameSurfaceView);
+        // SurfaceView surfaceView = findViewById(R.id.surfaceView);
+        // gameManager = new GameManager(surfaceView);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        gameManager.onPause();
+        gameSurfaceView.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         setFlags();
-        gameManager.onResume();
+        gameSurfaceView.onResume();
     }
 
     private void setFlags() {
@@ -48,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void setMargin() {
         int height = getNavigationBarHeight();
-        SurfaceView surfaceView = findViewById(R.id.surfaceView);
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) surfaceView.getLayoutParams();
+        ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) constraintLayout.getLayoutParams();
         params.setMargins(0, height, 0, height);
-        surfaceView.setLayoutParams(params);
+        constraintLayout.setLayoutParams(params);
     }
 
     private int getNavigationBarHeight() {

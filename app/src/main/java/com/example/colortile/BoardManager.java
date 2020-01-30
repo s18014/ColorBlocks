@@ -35,46 +35,60 @@ public class BoardManager extends GameObject {
     private Tile[][] board;
     private DotEffectSystem dotEffectSystem = new DotEffectSystem();
 
-    public void init(int rowNum, int columnNum) {
+    BoardManager(int rowNum, int columnNum) {
         this.rowNum = rowNum;
         this.columnNum = columnNum;
+    }
+
+    @Override
+    public void initialize() {
         dotEffectSystem.getTransform().setParent(getTransform());
         dotEffectSystem.init();
         createTiles();
-        /*
-        board = new Tile[rowNum][columnNum];
-        for (int row = 0; row < rowNum; row++) {
-            for (int col = 0; col < columnNum; col++) {
-                board[row][col] = new Tile();
-                board[row][col].getTransform().setParent(getTransform());
-                Tile.Type type = Tile.Type.NONE;
-                switch ((int) (Math.random() * 3)) {
-                    case 0:
-                        type = Tile.Type.RED;
-                        break;
-                    case 1:
-                        type = Tile.Type.GREEN;
-                        break;
-                    case 2:
-                        type = Tile.Type.BLUE;
-                        break;
-                }
-                board[row][col].init(type);
-                if (Math.random() < 0.2) {
-                    board[row][col].isExists = true;
-                }
+    }
 
+    @Override
+    public void updateWindow(int width, int height) {
+        setSize((float) width);
+    }
+
+    @Override
+    public void update() {
+        dotEffectSystem.update();
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        Paint paint = new Paint();
+
+        // TODO: 背景は別クラスでやる
+        for (int row = 0; row < rowNum + 6; row++) {
+            for (int col = 0; col < columnNum + 2; col++) {
+                if ((col + row) % 2 == 0) {
+                    paint.setColor(Color.parseColor("#ffffff"));
+                } else {
+                    paint.setColor(Color.parseColor("#eeeeee"));
+                }
+                PointF pos = getTransform().localToWorldPosition(new PointF(col * tileSize - tileSize * 1, row * tileSize - tileSize * 3));
+                canvas.drawRect(pos.x, pos.y, pos.x + tileSize, pos.y + tileSize, paint);
             }
         }
-         */
-    }
 
-    public Float getWidth() {
-        return width;
-    }
+        for (int row = 0; row < rowNum; row++) {
+            for (int col = 0; col < columnNum; col++) {
+                if (!board[row][col].isExists) continue;
+                board[row][col].draw(canvas);
+            }
+        }
+        dotEffectSystem.draw(canvas);
 
-    public Float getHeight() {
-        return height;
+        // TEST
+        if (!isExistsDeletableTiles()) {
+            paint.setColor(Color.parseColor("#999999"));
+            paint.setTextSize(width / 8f);
+            paint.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText("GAME OVER", width / 2f, height / 2f, paint);
+        }
     }
 
     public void setSize(Float width) {
@@ -130,42 +144,6 @@ public class BoardManager extends GameObject {
    }
 
 
-    public void draw(Canvas canvas) {
-        Paint paint = new Paint();
-
-        // TODO: 背景は別クラスでやる
-        for (int row = 0; row < rowNum + 6; row++) {
-            for (int col = 0; col < columnNum + 2; col++) {
-                if ((col + row) % 2 == 0) {
-                    paint.setColor(Color.parseColor("#ffffff"));
-                } else {
-                    paint.setColor(Color.parseColor("#eeeeee"));
-                }
-                PointF pos = getTransform().localToWorldPosition(new PointF(col * tileSize - tileSize * 1, row * tileSize - tileSize * 3));
-                canvas.drawRect(pos.x, pos.y, pos.x + tileSize, pos.y + tileSize, paint);
-            }
-        }
-
-        for (int row = 0; row < rowNum; row++) {
-            for (int col = 0; col < columnNum; col++) {
-                if (!board[row][col].isExists) continue;
-                board[row][col].draw(canvas);
-            }
-        }
-        dotEffectSystem.draw(canvas);
-
-        // TEST
-        if (!isExistsDeletableTiles()) {
-            paint.setColor(Color.parseColor("#999999"));
-            paint.setTextSize(width / 8f);
-            paint.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText("GAME OVER", width / 2f, height / 2f, paint);
-        }
-    }
-
-    public void update() {
-        dotEffectSystem.update();
-    }
 
     private CheckState[][] findTiles(int x, int y) {
         CheckState[][] checkedMap = new CheckState[rowNum][columnNum];
@@ -282,7 +260,7 @@ public class BoardManager extends GameObject {
             if (pointList.indexOf(new Point(x, y)) == -1) {
                 pointList.add(new Point(x, y));
             }
-       }
+        }
         if (branchCount > 0 && ignoreCount <= 1) {
             PointF right = rotate2D(new PointF(dx, dy), -90);
             PointF left = rotate2D(new PointF(dx, dy), 90);
