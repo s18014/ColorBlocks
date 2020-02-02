@@ -39,11 +39,6 @@ public class SceneManager implements ITask, ISceneChanger {
     }
 
     @Override
-    public void updateWindow(int width, int height) {
-        currentScene.updateWindow(width, height);
-    }
-
-    @Override
     public void changeScene(SceneManager.SCENE scene) {
         switch (scene) {
             case GAME:

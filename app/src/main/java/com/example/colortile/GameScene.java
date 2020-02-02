@@ -1,8 +1,6 @@
 package com.example.colortile;
 
 import android.graphics.Canvas;
-import android.os.Handler;
-import android.os.Looper;
 
 public class GameScene extends BaseScene {
 
@@ -34,11 +32,5 @@ public class GameScene extends BaseScene {
     public void draw(Canvas canvas) {
         super.draw(canvas);
         gameManager.draw(canvas);
-    }
-
-    @Override
-    public void updateWindow(int width, int height) {
-        super.updateWindow(width, height);
-        gameManager.updateWindow(width, height);
     }
 }

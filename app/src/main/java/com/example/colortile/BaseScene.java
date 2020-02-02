@@ -29,9 +29,4 @@ public abstract class BaseScene implements ITask {
     public void draw(Canvas canvas) {
 
     }
-
-    @Override
-    public void updateWindow(int width, int height) {
-        
-    }
 }

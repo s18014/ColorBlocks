@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class BoardManager extends GameObject {
+    static float BOARD_MARGIN_LEFT_AND_RIGHT = 0.01f;
 
     enum CheckState {
         NONE,
@@ -45,16 +46,16 @@ public class BoardManager extends GameObject {
         dotEffectSystem.getTransform().setParent(getTransform());
         dotEffectSystem.initialize();
         createTiles();
-    }
-
-    @Override
-    public void updateWindow(int width, int height) {
-        setSize((float) width);
+        setSize();
     }
 
     @Override
     public void update() {
         dotEffectSystem.update();
+        MyMotionEvent event = Input.getEvent();
+        if (event != null) {
+            onTouch(event);
+        }
     }
 
     @Override
@@ -89,10 +90,15 @@ public class BoardManager extends GameObject {
             paint.setTextAlign(Paint.Align.CENTER);
             canvas.drawText("GAME OVER", width / 2f, height / 2f, paint);
         }
+
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(width / 10f);
+        paint.setTextAlign(Paint.Align.CENTER);
+        canvas.drawText("W:" + ScreenSettings.getWidth() + ", h:" + ScreenSettings.getHeight(), ScreenSettings.getWidth() / 2f, ScreenSettings.getHeight() / 10f, paint);
     }
 
-    public void setSize(Float width) {
-        this.width = width;
+    public void setSize() {
+        this.width = ScreenSettings.getWidth() - BOARD_MARGIN_LEFT_AND_RIGHT * ScreenSettings.getWidth();
         tileSize = width / columnNum;
         dotEffectSystem.setSize(tileSize / 7f);
         this.height = tileSize * rowNum;
@@ -102,6 +108,10 @@ public class BoardManager extends GameObject {
                 board[row][col].setSize(tileSize);
             }
         }
+
+        Float posY = (ScreenSettings.getHeight() - height) / 2f;
+        getTransform().setPosition(new PointF(ScreenSettings.getWidth() * BOARD_MARGIN_LEFT_AND_RIGHT / 2f, posY));
+
     }
 
     public float getHeight() {
@@ -110,6 +120,7 @@ public class BoardManager extends GameObject {
 
     // ワールド座標から配列の位置を取得
     public Point worldToArrayIndex(PointF p) {
+        System.out.println(p);
         PointF lp = getTransform().worldToLocalPosition(p);
         int x = (int) Math.floor((lp.x / tileSize));
         int y = (int) Math.floor((lp.y / tileSize));
@@ -122,10 +133,11 @@ public class BoardManager extends GameObject {
         return getTransform().localToWorldPosition(lp);
     }
 
-    public void onTouch(MotionEvent event) {
+    public void onTouch(MyMotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP: {
                 isPressing = false;
+                dotEffectSystem.add(new PointF(event.getX(), event.getY()));
                 PointF p = new PointF(event.getX(), event.getY());
                 Point index = worldToArrayIndex(p);
                 if (index == null) return;
@@ -303,7 +315,6 @@ public class BoardManager extends GameObject {
         restTilePears.put(Tile.Type.E, 10);
         for (Tile.Type type : restTilePears.keySet()) {
             for (int i = 0; i < restTilePears.get(type); i++) {
-                System.out.println(blankPoints.size());
                 int rand = (int) (Math.random() * (blankPoints.size()-1));
                 Point a = blankPoints.get(rand);
                 blankPoints.remove(rand);

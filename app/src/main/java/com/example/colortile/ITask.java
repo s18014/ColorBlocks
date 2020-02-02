@@ -6,6 +6,5 @@ public interface ITask {
     void initialize();
     void finalize();
     void update();
-    void draw(Canvas cavnas);
-    void updateWindow(int width, int height);
+    void draw(Canvas canvas);
 }
