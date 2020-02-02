@@ -1,5 +1,7 @@
 package com.example.colortile;
 
+import android.graphics.Canvas;
+
 public abstract class GameObject implements ITask {
     private Transform transform = new Transform();
 
@@ -23,7 +25,12 @@ public abstract class GameObject implements ITask {
     }
 
     @Override
-    public void draw() {
+    public void draw(Canvas canvas) {
+
+    }
+
+    @Override
+    public void updateWindow(int width, int height) {
 
     }
 }

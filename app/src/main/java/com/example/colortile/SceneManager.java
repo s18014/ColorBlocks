@@ -3,22 +3,30 @@ package com.example.colortile;
 import android.graphics.Canvas;
 
 public class SceneManager implements ITask, ISceneChanger {
-    private BaseScene currentScene;
+    enum SCENE {
+        GAME,
+        TITLE,
+        RESULT
+    }
+
+    private BaseScene currentScene = new GameScene(this);
     private BaseScene nextScene;
 
     @Override
     public void initialize() {
-
+        currentScene.initialize();
     }
 
     @Override
     public void finalize() {
-
+        currentScene.finalize();
     }
 
     @Override
     public void update() {
         if (nextScene != null) {
+            currentScene.finalize();
+            currentScene = nextScene;
             currentScene.initialize();
             nextScene = null;
         }
@@ -27,12 +35,19 @@ public class SceneManager implements ITask, ISceneChanger {
 
     @Override
     public void draw(Canvas canvas) {
-
+        currentScene.draw(canvas);
     }
 
     @Override
     public void updateWindow(int width, int height) {
-
+        currentScene.updateWindow(width, height);
     }
 
+    @Override
+    public void changeScene(SceneManager.SCENE scene) {
+        switch (scene) {
+            case GAME:
+                nextScene = new GameScene(this);
+        }
+    }
 }

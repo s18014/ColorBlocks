@@ -5,12 +5,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
-class Tile extends GameObject {
-    static Float PADDING = 5f;
+public class Tile extends GameObject {
 
     public Boolean isExists = false;
     public Type type = Type.NONE;
 
+    private Float padding = 0f;
+    private Float edgeSize = 0f;
     private Float size = 0f;
 
     enum Type {
@@ -28,6 +29,8 @@ class Tile extends GameObject {
 
     public void setSize(Float size) {
         this.size = size;
+        this.edgeSize = size / 10f;
+        this.padding = size / 15f;
     }
 
     public void draw(Canvas canvas) {
@@ -52,6 +55,6 @@ class Tile extends GameObject {
                 break;
         }
         PointF pos = getTransform().getPosition();
-        canvas.drawRoundRect(pos.x + PADDING, pos.y + PADDING, pos.x + size - PADDING, pos.y + size - PADDING, 10f, 10f, paint);
+        canvas.drawRoundRect(pos.x + padding, pos.y + padding, pos.x + size - padding, pos.y + size - padding, edgeSize, edgeSize, paint);
     }
 }

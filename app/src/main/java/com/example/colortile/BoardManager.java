@@ -43,7 +43,7 @@ public class BoardManager extends GameObject {
     @Override
     public void initialize() {
         dotEffectSystem.getTransform().setParent(getTransform());
-        dotEffectSystem.init();
+        dotEffectSystem.initialize();
         createTiles();
     }
 
@@ -102,6 +102,10 @@ public class BoardManager extends GameObject {
                 board[row][col].setSize(tileSize);
             }
         }
+    }
+
+    public float getHeight() {
+        return height;
     }
 
     // ワールド座標から配列の位置を取得

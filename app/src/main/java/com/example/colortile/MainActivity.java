@@ -2,6 +2,7 @@ package com.example.colortile;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,6 +13,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 public class MainActivity extends AppCompatActivity {
     static int FLAGS = View.SYSTEM_UI_FLAG_FULLSCREEN |
@@ -30,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         setFlags();
         setMargin();
         gameSurfaceView = new GameSurfaceView(this);
-        setContentView(gameSurfaceView);
+        ((ConstraintLayout) findViewById(R.id.container)).addView(gameSurfaceView);
         // SurfaceView surfaceView = findViewById(R.id.surfaceView);
         // gameManager = new GameManager(surfaceView);
     }
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setMargin() {
         int height = getNavigationBarHeight();
-        ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
+        ConstraintLayout constraintLayout = findViewById(R.id.container);
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) constraintLayout.getLayoutParams();
         params.setMargins(0, height, 0, height);
         constraintLayout.setLayoutParams(params);

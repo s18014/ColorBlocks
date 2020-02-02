@@ -2,7 +2,7 @@ package com.example.colortile;
 
 import android.graphics.Canvas;
 
-public class BaseScene implements ITask {
+public abstract class BaseScene implements ITask {
 
     protected ISceneChanger sceneChanger;
 

@@ -8,7 +8,9 @@ public class DotEffectSystem extends GameObject{
 
     private final DotEffect[] effects = new DotEffect[size];
 
-    public void init() {
+    @Override
+    public void initialize() {
+        super.initialize();
         for (int i = 0; i < effects.length; i++) {
             effects[i] = new DotEffect();
             effects[i].getTransform().setParent(getTransform());
@@ -31,7 +33,9 @@ public class DotEffectSystem extends GameObject{
         }
     }
 
+    @Override
     public void draw(Canvas canvas) {
+        super.draw(canvas);
         for (int i = 0; i < effects.length; i++) {
             if (effects[i].isExists) {
                 effects[i].draw(canvas);
@@ -39,7 +43,9 @@ public class DotEffectSystem extends GameObject{
         }
     }
 
+    @Override
     public void update() {
+        super.update();
         for (int i = 0; i < effects.length; i++) {
             if (effects[i].isExists) {
                 effects[i].update();
