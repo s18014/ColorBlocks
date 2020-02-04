@@ -1,18 +1,25 @@
 package com.example.colortile;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.PointF;
+import android.preference.PreferenceManager;
 
 public class DotEffectSystem extends GameObject{
     static int size = 100;
 
     private final DotEffect[] effects = new DotEffect[size];
 
+    DotEffectSystem(Context context) {
+        super(context);
+    }
+
     @Override
     public void initialize() {
         super.initialize();
         for (int i = 0; i < effects.length; i++) {
-            effects[i] = new DotEffect();
+            effects[i] = new DotEffect(context);
             effects[i].getTransform().setParent(getTransform());
         }
     }

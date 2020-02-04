@@ -6,8 +6,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.media.AudioAttributes;
-import android.media.SoundPool;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
@@ -15,8 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BoardManager extends GameObject {
-    static final float BOARD_MARGIN_LEFT_AND_RIGHT = 0.01f;
+public class BoardManagerTitle extends GameObject {
+    static float BOARD_MARGIN_LEFT_AND_RIGHT = 0.01f;
 
     enum CheckState {
         NONE,
@@ -26,67 +24,60 @@ public class BoardManager extends GameObject {
         PATH
     }
 
-    private SoundPool soundPool;
-    private int soundOne;
-
     private Float width;
     private Float height;
     private int rowNum;
     private int columnNum;
-    private int score;
-    private float time;
-    private float endTime = 60f;
-
     private boolean isPressing = false;
     private PointF pressingPoint;
 
     private Float tileSize;
     private Tile[][] board;
     private DotEffectSystem dotEffectSystem = new DotEffectSystem(context);
+    private int frame = 0;
+    private int nextFrame = 60;
+    private int row = 0;
+    private int col = 0;
 
-    BoardManager(int rowNum, int columnNum, Context context) {
+    BoardManagerTitle(int rowNum, int columnNum, Context context) {
         super(context);
         this.rowNum = rowNum;
         this.columnNum = columnNum;
+
     }
 
     @Override
     public void initialize() {
-
-        AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                // USAGE_MEDIA
-                // USAGE_GAME
-                .setUsage(AudioAttributes.USAGE_GAME)
-                // CONTENT_TYPE_MUSIC
-                // CONTENT_TYPE_SPEECH, etc.
-                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                .build();
-
-        soundPool = new SoundPool.Builder()
-                .setAudioAttributes(audioAttributes)
-                // ストリーム数に応じて
-                .setMaxStreams(2)
-                .build();
-
-
-        soundOne = soundPool.load(context, R.raw.poka03, 1);
         dotEffectSystem.getTransform().setParent(getTransform());
         dotEffectSystem.initialize();
         createTiles();
         setSize();
-        score = 0;
-        Score.initialize();
     }
-
 
     @Override
     public void update() {
-        time += Time.getDeltaTime();
         dotEffectSystem.update();
-        MyMotionEvent event = Input.getEvent();
-        if (event == null) return;
-        onTouch(event);
-    }
+        frame++;
+        if (nextFrame < frame) {
+            nextFrame += 60;
+            initialize();
+        }
+        if (col + 1 >= columnNum) {
+            row++;
+            col = -1;
+        }
+        col++;
+        if (row + 1 >= rowNum && col + 1 >= columnNum) {
+            row = 0;
+            col = 0;
+        }
+        CheckState[][] foundTilesMap = findTiles(col, row);
+        if (foundTilesMap == null) return;
+        CheckState[][] deletableTilesMap = findDeletableTiles(foundTilesMap);
+        if (deletableTilesMap == null) return;
+        deleteTiles(deletableTilesMap, col, row);
+
+   }
 
     @Override
     public void draw(Canvas canvas) {
@@ -112,17 +103,6 @@ public class BoardManager extends GameObject {
             }
         }
         dotEffectSystem.draw(canvas);
-        paint.setTextSize(ScreenSettings.getWidth() / 10);
-        paint.setColor(Color.BLACK);
-        paint.setTextAlign(Paint.Align.CENTER);
-        float restTime = endTime - time;
-        if (restTime < 0) restTime = 0;
-        String timeStr = String.format("%.1f", restTime);
-        canvas.drawText(timeStr + "秒", ScreenSettings.getWidth() / 6f, ScreenSettings.getWidth() / 6f, paint);
-   }
-
-    public int getScore() {
-        return score;
     }
 
     public void setSize() {
@@ -243,13 +223,11 @@ public class BoardManager extends GameObject {
     }
 
     private void deleteTiles(CheckState[][] deletableTilesMap, int x, int y) {
-        soundPool.play(soundOne, 1, 1, 0, 0, 1);
         CheckState[][] foundRouteMap = new CheckState[rowNum][columnNum];
         for (int row = 0; row < rowNum; row++) {
             for (int col = 0; col < columnNum; col++) {
                 if (deletableTilesMap[row][col] == CheckState.CHECKED) {
                     board[row][col].isExists = false;
-                    score++;
                     findRoute(x, y, col, row, foundRouteMap);
                 }
             }
@@ -277,7 +255,7 @@ public class BoardManager extends GameObject {
         }
     }
 
-    public Boolean isExistsDeletableTiles() {
+    private Boolean isExistsDeletableTiles() {
         for (int row = 0; row < rowNum; row++) {
             for (int col = 0; col < columnNum; col++) {
                 if (board[row][col].isExists) continue;
@@ -289,10 +267,6 @@ public class BoardManager extends GameObject {
             }
         }
         return false;
-    }
-
-    public Boolean isGameOver() {
-        return !isExistsDeletableTiles() || time > endTime;
     }
 
     private List<Point> findPutablePoint4way(int x, int y) {
@@ -341,11 +315,11 @@ public class BoardManager extends GameObject {
         }
 
         Map<Tile.Type, Integer> restTilePears = new HashMap<>();
-        restTilePears.put(Tile.Type.A, 10);
-        restTilePears.put(Tile.Type.B, 10);
-        restTilePears.put(Tile.Type.C, 10);
-        restTilePears.put(Tile.Type.D, 10);
-        restTilePears.put(Tile.Type.E, 10);
+        restTilePears.put(Tile.Type.A, 5);
+        restTilePears.put(Tile.Type.B, 5);
+        restTilePears.put(Tile.Type.C, 5);
+        restTilePears.put(Tile.Type.D, 5);
+        restTilePears.put(Tile.Type.E, 5);
         for (Tile.Type type : restTilePears.keySet()) {
             for (int i = 0; i < restTilePears.get(type); i++) {
                 int rand = (int) (Math.random() * (blankPoints.size()-1));

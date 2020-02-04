@@ -1,5 +1,6 @@
 package com.example.colortile;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,6 +11,10 @@ public class DotEffect extends GameObject {
     private Long startTime = 0L;
     public Boolean isExists = false;
     public float size = 0f;
+
+    DotEffect(Context context) {
+        super(context);
+    }
 
 
     public void init(PointF position) {

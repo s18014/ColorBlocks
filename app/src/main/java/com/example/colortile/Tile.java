@@ -1,5 +1,6 @@
 package com.example.colortile;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,6 +14,10 @@ public class Tile extends GameObject {
     private Float padding = 0f;
     private Float edgeSize = 0f;
     private Float size = 0f;
+
+    Tile(Context context) {
+        super(context);
+    }
 
     enum Type {
         NONE,

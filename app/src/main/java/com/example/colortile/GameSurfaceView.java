@@ -61,7 +61,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     @Override
     public void run() {
-        int frame = 0;
         while (thread != null) {
             // バックグラウンド用のループ
             if (!isActive || !getHolder().getSurface().isValid()) {
@@ -73,11 +72,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 }
             }
 
+            Time.update();
             sceneManager.update();
             draw();
             Input.next();
 
-            frame++;
             // 次のフレームまで停止
             try {
                 Thread.sleep(1000 / FPS);

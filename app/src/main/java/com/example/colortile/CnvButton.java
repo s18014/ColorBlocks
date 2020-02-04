@@ -1,5 +1,6 @@
 package com.example.colortile;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -9,10 +10,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
 import android.view.MotionEvent;
 import android.view.View;
 
-public class CnvButton implements ITask {
+public class CnvButton extends GameObject {
     private Paint paint = new Paint();
     private Bitmap btnBitmap;
     private RectF blindRectF;
@@ -26,8 +29,16 @@ public class CnvButton implements ITask {
     private PointF translate;
     private RectF rectF;
     private View.OnClickListener listener;
+    private String text = "";
+    private Integer textSize = 0;
+    private int textColor = Color.BLACK;
 
-    CnvButton(Resources res, int btnImageId, float x, float y, float width, float height) {
+    private SoundPool soundPool;
+    private int clickSound;
+
+
+    CnvButton(Context context, int btnImageId, float x, float y, float width, float height) {
+        super(context);
         this.width = width;
         this.height = height;
         this.x = x;
@@ -37,7 +48,7 @@ public class CnvButton implements ITask {
         rectF = new RectF(x, y, x + width, y + height);
 
         // 生の画像サイズ
-        Bitmap beforeResizeBitmap = BitmapFactory.decodeResource(res, btnImageId);
+        Bitmap beforeResizeBitmap = BitmapFactory.decodeResource(context.getResources(), btnImageId);
 
         // リサイズ比
         // 当たり判定より大きくならないように小さい比率を取得
@@ -54,13 +65,32 @@ public class CnvButton implements ITask {
         translate = new PointF((width - btnBitmap.getWidth()) / 2f, (height - btnBitmap.getHeight()) / 2f);
 
         blindRectF = new RectF(x + translate.x, y + translate.y, x + translate.x + btnBitmap.getWidth(), y + translate.y + btnBitmap.getHeight());
+
+
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                // USAGE_MEDIA
+                // USAGE_GAME
+                .setUsage(AudioAttributes.USAGE_GAME)
+                // CONTENT_TYPE_MUSIC
+                // CONTENT_TYPE_SPEECH, etc.
+                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                .build();
+
+        soundPool = new SoundPool.Builder()
+                .setAudioAttributes(audioAttributes)
+                // ストリーム数に応じて
+                .setMaxStreams(2)
+                .build();
+
+
+        clickSound = soundPool.load(context, R.raw.button06, 1);
     }
 
 
     @Override
     public void initialize() {
 
-    }
+   }
 
     @Override
     public void finalize() {
@@ -69,6 +99,7 @@ public class CnvButton implements ITask {
 
     @Override
     public void update() {
+        if (!visible) return;
         rectF = new RectF(x, y, x + width, y + height);
         MyMotionEvent event = Input.getEvent();
         if (event != null) {
@@ -80,6 +111,7 @@ public class CnvButton implements ITask {
                 case MotionEvent.ACTION_UP:
                     if (rectF.contains(event.getX(), event.getY()) && pressed) {
                         if (listener != null) listener.onClick(null);
+                        soundPool.play(clickSound, 1, 1, 0, 0, 1);
                     }
                     pressed = false;
                     break;
@@ -91,8 +123,31 @@ public class CnvButton implements ITask {
     @Override
     public void draw(Canvas canvas) {
         canvas.drawBitmap(btnBitmap, translate.x + x, translate.y + y, null);
+
+        // 文字を表示
+        float centerX = x + translate.x + btnBitmap.getWidth() / 2;
+        float centerY = y + translate.y + btnBitmap.getHeight() / 2;
+
+        // テキスト用ペイントの生成
+        Paint textPaint = new Paint( Paint.ANTI_ALIAS_FLAG);
+        textPaint.setTextSize(textSize);
+        textPaint.setColor( textColor);
+
+        Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
+
+        // 文字列の幅を取得
+        float textWidth = textPaint.measureText( text);
+
+        // 中心にしたいX座標から文字列の幅の半分を引く
+        float baseX = centerX - textWidth / 2;
+        // 中心にしたいY座標からAscentとDescentの半分を引く
+        float baseY = centerY - (fontMetrics.ascent + fontMetrics.descent) / 2;
+
+        // テキストの描画
+        canvas.drawText( text, baseX, baseY, textPaint);
+
         if (pressed) {
-            paint.setColor(Color.argb(20, 50, 50, 50));
+            paint.setColor(Color.argb(30, 50, 50, 50));
             canvas.drawRect(blindRectF, paint);
         }
         if (ScreenSettings.getDisplayMode() == ScreenSettings.DISPLAY_MODE.DEBUG) {
@@ -101,7 +156,17 @@ public class CnvButton implements ITask {
         }
     }
 
+    public void setText(String text, int size, int color) {
+        this.text = text;
+        this.textSize = size;
+        this.textColor = color;
+    }
+
     public void setOnClickListener(View.OnClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setVisible(boolean visible)  {
+        this.visible = visible;
     }
 }

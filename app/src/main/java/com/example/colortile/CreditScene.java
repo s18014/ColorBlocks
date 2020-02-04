@@ -3,34 +3,28 @@ package com.example.colortile;
 import android.content.Context;
 import android.graphics.Canvas;
 
-public abstract class GameObject implements ITask {
-    private Transform transform = new Transform();
-    protected Context context;
-
-    GameObject(Context context) {
-        this.context = context;
-    }
-
-    public Transform getTransform() {
-        return transform;
+public class CreditScene extends BaseScene {
+    CreditScene(Context context) {
+        super(context);
     }
 
     @Override
     public void initialize() {
-
+        super.initialize();
     }
 
     @Override
     public void finalize() {
-
+        super.finalize();
     }
 
     @Override
     public void update() {
+        super.update();
     }
 
     @Override
     public void draw(Canvas canvas) {
-
+        super.draw(canvas);
     }
 }
