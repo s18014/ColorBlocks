@@ -2,22 +2,21 @@ package com.example.colortile;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.view.MotionEvent;
 
-public class SceneManager implements ITask, ISceneChanger {
+public class SceneManager implements ITask {
     enum SCENE {
         GAME,
         TITLE,
         RESULT
     }
 
-    private Context context;
-    private BaseScene currentScene;
-    private BaseScene nextScene;
+    private static Context context;
+    private static BaseScene currentScene;
+    private static BaseScene nextScene;
 
-    SceneManager(Context context) {
-        this.context = context;
-        this.currentScene = new TitleScene(this, context);
+    SceneManager(Context context, SCENE defaultScene) {
+        SceneManager.context = context;
+        changeScene(defaultScene);
     }
 
     @Override
@@ -46,14 +45,19 @@ public class SceneManager implements ITask, ISceneChanger {
         currentScene.draw(canvas);
     }
 
-    @Override
-    public void changeScene(SceneManager.SCENE scene) {
+    public static void changeScene(SceneManager.SCENE scene) {
         switch (scene) {
             case GAME:
-                nextScene = new GameScene(this, context);
+                nextScene = new GameScene(context);
                 break;
             case TITLE:
-                nextScene = new TitleScene(this, context);
+                nextScene = new TitleScene(context);
+                break;
+        }
+
+        if (currentScene == null) {
+            currentScene = nextScene;
+            nextScene = null;
         }
     }
 }

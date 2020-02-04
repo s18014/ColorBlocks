@@ -27,7 +27,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         HEIGHT = ScreenSettings.getHeight();
         getHolder().addCallback(this);
         setOnTouchListener(this);
-        sceneManager = new SceneManager(context);
+        sceneManager = new SceneManager(context, SceneManager.SCENE.TITLE);
         sceneManager.initialize();
     }
 

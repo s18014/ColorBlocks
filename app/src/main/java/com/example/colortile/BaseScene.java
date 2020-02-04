@@ -5,11 +5,9 @@ import android.graphics.Canvas;
 
 public abstract class BaseScene implements ITask {
 
-    protected ISceneChanger sceneChanger;
     protected Context context;
 
-    BaseScene(ISceneChanger sceneChanger, Context context) {
-        this.sceneChanger = sceneChanger;
+    BaseScene(Context context) {
         this.context = context;
     }
 

@@ -9,8 +9,8 @@ public class GameScene extends BaseScene {
     GameObject gameManager = new GameManager();
     CnvButton titleBtn;
 
-    GameScene(ISceneChanger sceneChanger, Context context) {
-        super(sceneChanger, context);
+    GameScene(Context context) {
+        super(context);
     }
 
     @Override
@@ -21,7 +21,7 @@ public class GameScene extends BaseScene {
         titleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sceneChanger.changeScene(SceneManager.SCENE.TITLE);
+                SceneManager.changeScene(SceneManager.SCENE.TITLE);
             }
         });
     }

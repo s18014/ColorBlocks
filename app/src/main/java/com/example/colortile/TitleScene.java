@@ -4,13 +4,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.view.MotionEvent;
 import android.view.View;
 
 public class TitleScene extends BaseScene {
     CnvButton cnvButton;
-    TitleScene(ISceneChanger sceneChanger, Context context) {
-        super(sceneChanger, context);
+    TitleScene(Context context) {
+        super(context);
     }
 
     @Override
@@ -20,7 +19,7 @@ public class TitleScene extends BaseScene {
         cnvButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sceneChanger.changeScene(SceneManager.SCENE.GAME);
+                SceneManager.changeScene(SceneManager.SCENE.GAME);
             }
         });
     }
