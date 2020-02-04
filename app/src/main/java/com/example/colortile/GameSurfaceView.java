@@ -1,7 +1,6 @@
 package com.example.colortile;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PointF;
@@ -11,12 +10,12 @@ import android.view.SurfaceView;
 import android.view.View;
 
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable, View.OnTouchListener {
-    private static long FPS = 30l;
+    private static long FPS = 60l;
 
     private Thread thread;
     private Boolean isActive = false;
 
-    private SceneManager sceneManager = new SceneManager();
+    private SceneManager sceneManager;
     private float WIDTH;
     private float HEIGHT;
     private PointF translation;
@@ -28,6 +27,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         HEIGHT = ScreenSettings.getHeight();
         getHolder().addCallback(this);
         setOnTouchListener(this);
+        sceneManager = new SceneManager(context);
         sceneManager.initialize();
     }
 
@@ -45,9 +45,12 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        // ViewとScreenの画面サイズ比
         float scaleX = getWidth() / WIDTH;
         float scaleY = getHeight() / HEIGHT;
         scale = Math.min(scaleX, scaleY);
+        // View / 2 = 画面中央
+        // Screen * scale / 2 = Screenの中央
         translation = new PointF((getWidth() - WIDTH * scale) / 2f, (getHeight() - HEIGHT * scale) / 2f);
     }
 
@@ -87,7 +90,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         event.setLocation(event.getX() / scale - translation.x / scale, event.getY() / scale - translation.y / scale);
-        System.out.println("X:" + event.getX() + ", Y:" + event.getY());
         Input.add(event);
         return true;
     }

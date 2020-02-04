@@ -21,7 +21,6 @@ public abstract class GameObject implements ITask {
 
     @Override
     public void update() {
-
     }
 
     @Override

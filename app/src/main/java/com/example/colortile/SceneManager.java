@@ -1,6 +1,8 @@
 package com.example.colortile;
 
+import android.content.Context;
 import android.graphics.Canvas;
+import android.view.MotionEvent;
 
 public class SceneManager implements ITask, ISceneChanger {
     enum SCENE {
@@ -9,8 +11,14 @@ public class SceneManager implements ITask, ISceneChanger {
         RESULT
     }
 
-    private BaseScene currentScene = new GameScene(this);
+    private Context context;
+    private BaseScene currentScene;
     private BaseScene nextScene;
+
+    SceneManager(Context context) {
+        this.context = context;
+        this.currentScene = new TitleScene(this, context);
+    }
 
     @Override
     public void initialize() {
@@ -42,7 +50,10 @@ public class SceneManager implements ITask, ISceneChanger {
     public void changeScene(SceneManager.SCENE scene) {
         switch (scene) {
             case GAME:
-                nextScene = new GameScene(this);
+                nextScene = new GameScene(this, context);
+                break;
+            case TITLE:
+                nextScene = new TitleScene(this, context);
         }
     }
 }

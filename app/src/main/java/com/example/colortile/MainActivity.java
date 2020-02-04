@@ -33,8 +33,6 @@ public class MainActivity extends AppCompatActivity {
         setMargin();
         gameSurfaceView = new GameSurfaceView(this);
         ((ConstraintLayout) findViewById(R.id.container)).addView(gameSurfaceView);
-        // SurfaceView surfaceView = findViewById(R.id.surfaceView);
-        // gameManager = new GameManager(surfaceView);
     }
 
     @Override

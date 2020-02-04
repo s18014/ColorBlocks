@@ -1,26 +1,28 @@
 package com.example.colortile;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Handler;
-import android.os.Looper;
+import android.view.MotionEvent;
+import android.view.View;
 
 public class TitleScene extends BaseScene {
-    TitleScene(ISceneChanger sceneChanger) {
-        super(sceneChanger);
+    CnvButton cnvButton;
+    TitleScene(ISceneChanger sceneChanger, Context context) {
+        super(sceneChanger, context);
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(new Runnable() {
+        cnvButton = new CnvButton(context.getResources(), R.drawable.start_100x25, ScreenSettings.getWidth() / 2 - (100 * 4 / 2), ScreenSettings.getHeight() / 2, 100 * 4, 25 * 4);
+        cnvButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
+            public void onClick(View v) {
                 sceneChanger.changeScene(SceneManager.SCENE.GAME);
             }
-        }, 1000);
+        });
     }
 
     @Override
@@ -31,6 +33,7 @@ public class TitleScene extends BaseScene {
     @Override
     public void update() {
         super.update();
+        cnvButton.update();
     }
 
     @Override
@@ -38,7 +41,9 @@ public class TitleScene extends BaseScene {
         super.draw(canvas);
         Paint paint = new Paint();
         paint.setColor(Color.GREEN);
-        paint.setTextSize(200f);
-        canvas.drawText("TITLE", 500f, 500f, paint);
+        paint.setTextSize(ScreenSettings.getWidth() / 6f);
+        paint.setTextAlign(Paint.Align.CENTER);
+        canvas.drawText("TITLE", ScreenSettings.getWidth() / 2f, ScreenSettings.getHeight() / 4f, paint);
+        cnvButton.draw(canvas);
     }
 }

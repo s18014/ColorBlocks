@@ -53,9 +53,8 @@ public class BoardManager extends GameObject {
     public void update() {
         dotEffectSystem.update();
         MyMotionEvent event = Input.getEvent();
-        if (event != null) {
-            onTouch(event);
-        }
+        if (event == null) return;
+        onTouch(event);
     }
 
     @Override
@@ -90,12 +89,7 @@ public class BoardManager extends GameObject {
             paint.setTextAlign(Paint.Align.CENTER);
             canvas.drawText("GAME OVER", width / 2f, height / 2f, paint);
         }
-
-        paint.setColor(Color.BLACK);
-        paint.setTextSize(width / 10f);
-        paint.setTextAlign(Paint.Align.CENTER);
-        canvas.drawText("W:" + ScreenSettings.getWidth() + ", h:" + ScreenSettings.getHeight(), ScreenSettings.getWidth() / 2f, ScreenSettings.getHeight() / 10f, paint);
-    }
+   }
 
     public void setSize() {
         this.width = ScreenSettings.getWidth() - BOARD_MARGIN_LEFT_AND_RIGHT * ScreenSettings.getWidth();
@@ -120,7 +114,6 @@ public class BoardManager extends GameObject {
 
     // ワールド座標から配列の位置を取得
     public Point worldToArrayIndex(PointF p) {
-        System.out.println(p);
         PointF lp = getTransform().worldToLocalPosition(p);
         int x = (int) Math.floor((lp.x / tileSize));
         int y = (int) Math.floor((lp.y / tileSize));
@@ -296,7 +289,7 @@ public class BoardManager extends GameObject {
                 board[row][col] = new Tile();
                 board[row][col].getTransform().setParent(getTransform());
                 Tile.Type type = Tile.Type.NONE;
-                board[row][col].init(type);
+                board[row][col].setType(type);
             }
         }
 
@@ -333,8 +326,8 @@ public class BoardManager extends GameObject {
 
                 board[a.y][a.x].isExists = true;
                 board[b.y][b.x].isExists = true;
-                board[a.y][a.x].init(type);
-                board[b.y][b.x].init(type);
+                board[a.y][a.x].setType(type);
+                board[b.y][b.x].setType(type);
             }
         }
     }

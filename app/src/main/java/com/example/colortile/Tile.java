@@ -23,7 +23,7 @@ public class Tile extends GameObject {
         E
     }
 
-    public void init(Type type) {
+    public void setType(Type type) {
         this.type = type;
     }
 
@@ -33,6 +33,7 @@ public class Tile extends GameObject {
         this.padding = size / 15f;
     }
 
+    @Override
     public void draw(Canvas canvas) {
         Paint paint = new Paint();
         switch (type) {
