@@ -28,7 +28,7 @@ public class PauseScreen extends GameObject{
         btnHeight = btnWidth * 0.25f;
         titleButton = new CnvButton(context, R.drawable.start_100x25,
                 ScreenSettings.getWidth() / 2f - btnWidth / 2,
-                ScreenSettings.getHeight() * 0.6f,
+                ScreenSettings.getHeight() * 0.5f,
                 btnWidth,
                 btnHeight
         );
@@ -43,7 +43,7 @@ public class PauseScreen extends GameObject{
 
         retryButton = new CnvButton(context, R.drawable.start_100x25,
                 ScreenSettings.getWidth() / 2f - btnWidth / 2,
-                ScreenSettings.getHeight() * 0.7f,
+                ScreenSettings.getHeight() * 0.6f,
                 btnWidth,
                 btnHeight
         );
@@ -71,6 +71,8 @@ public class PauseScreen extends GameObject{
         });
         resumeButton.setText("再開", (int) btnWidth / 7, Color.WHITE);
 
+        time = 0;
+        isPause = true;
     }
 
     @Override
@@ -108,10 +110,5 @@ public class PauseScreen extends GameObject{
 
     public boolean isPause() {
         return isPause;
-    }
-
-    public void startPause() {
-        time = 0;
-        isPause = true;
     }
 }

@@ -13,7 +13,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private static long FPS = 60l;
 
     private Thread thread;
-    private Boolean isActive = false;
+    private Boolean isActive = true;
 
     private SceneManager sceneManager;
     private float WIDTH;
@@ -105,11 +105,12 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     public void onResume() {
-        isActive = true;
+        sceneManager.onResume();
+        Time.onResume();
     }
 
     public void onPause() {
-        isActive = false;
+        sceneManager.onPause();
     }
 
 }

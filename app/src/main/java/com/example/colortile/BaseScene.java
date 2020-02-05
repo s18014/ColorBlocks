@@ -29,4 +29,14 @@ public abstract class BaseScene implements ITask {
     public void draw(Canvas canvas) {
 
     }
+
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
 }

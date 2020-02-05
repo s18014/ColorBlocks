@@ -3,6 +3,8 @@ package com.example.colortile;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
 import android.view.View;
 
 
@@ -17,12 +19,16 @@ public class GameManager extends GameObject {
     static int BOARD_ROW_NUM = 13;
     static int BOARD_COLUMN_NUM = 10;
 
+    private SoundPool soundPool;
+    private int gameOverSound;
+
     private BoardManager board = new BoardManager(BOARD_ROW_NUM, BOARD_COLUMN_NUM, context);
     private ResultScreen resultScreen = new ResultScreen(context);
     private PauseScreen pauseScreen = new PauseScreen(context);
     private CnvButton pauseButton;
     private float btnWidth;
     private float btnHeight;
+    private boolean isOnPause = false;
 
     private GameState gameState = GameState.NORMAL;
 
@@ -48,10 +54,27 @@ public class GameManager extends GameObject {
             @Override
             public void onClick(View v) {
                 gameState = GameState.PAUSE;
-                pauseScreen.startPause();
+                pauseScreen.initialize();
             }
         });
         pauseButton.setText("||", (int) Math.floor(btnWidth * 0.6), Color.WHITE);
+
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                // USAGE_MEDIA
+                // USAGE_GAME
+                .setUsage(AudioAttributes.USAGE_GAME)
+                // CONTENT_TYPE_MUSIC
+                // CONTENT_TYPE_SPEECH, etc.
+                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                .build();
+
+        soundPool = new SoundPool.Builder()
+                .setAudioAttributes(audioAttributes)
+                // ストリーム数に応じて
+                .setMaxStreams(2)
+                .build();
+
+        gameOverSound = soundPool.load(context, R.raw.crrect_answer3, 1);
     }
 
     @Override
@@ -64,10 +87,21 @@ public class GameManager extends GameObject {
 
     @Override
     public void update() {
+        if (isOnPause) {
+            gameState = GameState.PAUSE;
+            pauseScreen.initialize();
+            isOnPause = false;
+        }
         switch (gameState) {
             case NORMAL:
                 board.update();
                 pauseButton.update();
+                if (board.isGameOver()) {
+                    gameState = GameState.GAME_OVER;
+                    Score score = new Score(context);
+                    score.setScore(board.getScore());
+                    soundPool.play(gameOverSound, 1, 1, 0, 0, 1);
+                }
                 break;
             case GAME_OVER:
                 resultScreen.update();
@@ -78,12 +112,7 @@ public class GameManager extends GameObject {
                 break;
         }
 
-        if (board.isGameOver()) {
-            gameState = GameState.GAME_OVER;
-            Score score = new Score(context);
-            score.setScore(board.getScore());
-        }
-    }
+   }
 
     @Override
     public void draw(Canvas canvas) {
@@ -101,5 +130,16 @@ public class GameManager extends GameObject {
                 pauseScreen.draw(canvas);
                 break;
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isOnPause = true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }

@@ -34,8 +34,7 @@ public class BoardManagerTitle extends GameObject {
     private Float tileSize;
     private Tile[][] board;
     private DotEffectSystem dotEffectSystem = new DotEffectSystem(context);
-    private int frame = 0;
-    private int nextFrame = 60;
+    private float time;
     private int row = 0;
     private int col = 0;
 
@@ -57,9 +56,9 @@ public class BoardManagerTitle extends GameObject {
     @Override
     public void update() {
         dotEffectSystem.update();
-        frame++;
-        if (nextFrame < frame) {
-            nextFrame += 60;
+        time += Time.getDeltaTime();
+        if (time > 1) {
+            time = 0;
             initialize();
         }
         if (col + 1 >= columnNum) {

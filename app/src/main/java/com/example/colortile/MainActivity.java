@@ -2,18 +2,12 @@ package com.example.colortile;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.FragmentTransaction;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 public class MainActivity extends AppCompatActivity {
     static int FLAGS = View.SYSTEM_UI_FLAG_FULLSCREEN |

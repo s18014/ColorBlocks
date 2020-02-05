@@ -21,4 +21,8 @@ public class Time {
     public static int getFrame() {
         return frame;
     }
+
+    public static void onResume() {
+        lastFrameTime = System.currentTimeMillis();
+    }
 }

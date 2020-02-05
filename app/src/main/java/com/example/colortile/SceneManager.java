@@ -45,6 +45,16 @@ public class SceneManager implements ITask {
         currentScene.draw(canvas);
     }
 
+    @Override
+    public void onPause() {
+        currentScene.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        currentScene.onResume();
+    }
+
     public static void changeScene(SceneManager.SCENE scene) {
         switch (scene) {
             case GAME:

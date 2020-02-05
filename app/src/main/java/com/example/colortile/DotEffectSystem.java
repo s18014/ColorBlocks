@@ -1,10 +1,8 @@
 package com.example.colortile;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.PointF;
-import android.preference.PreferenceManager;
 
 public class DotEffectSystem extends GameObject{
     static int size = 100;

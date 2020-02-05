@@ -35,4 +35,16 @@ public class GameScene extends BaseScene {
         super.draw(canvas);
         gameManager.draw(canvas);
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        gameManager.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        gameManager.onResume();
+    }
 }

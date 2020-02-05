@@ -7,4 +7,6 @@ public interface ITask {
     void finalize();
     void update();
     void draw(Canvas canvas);
+    void onPause();
+    void onResume();
 }

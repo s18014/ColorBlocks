@@ -27,7 +27,8 @@ public class BoardManager extends GameObject {
     }
 
     private SoundPool soundPool;
-    private int soundOne;
+    private int deleteSound;
+    private int missSound;
 
     private Float width;
     private Float height;
@@ -35,7 +36,7 @@ public class BoardManager extends GameObject {
     private int columnNum;
     private int score;
     private float time;
-    private float endTime = 60f;
+    private float endTime;
 
     private boolean isPressing = false;
     private PointF pressingPoint;
@@ -69,12 +70,14 @@ public class BoardManager extends GameObject {
                 .build();
 
 
-        soundOne = soundPool.load(context, R.raw.poka03, 1);
+        deleteSound = soundPool.load(context, R.raw.poka03, 1);
+        missSound = soundPool.load(context, R.raw.blip04, 1);
         dotEffectSystem.getTransform().setParent(getTransform());
         dotEffectSystem.initialize();
         createTiles();
         setSize();
         score = 0;
+        endTime = 45f;
         Score.initialize();
     }
 
@@ -171,7 +174,11 @@ public class BoardManager extends GameObject {
                 CheckState[][] foundTilesMap = findTiles(index.x, index.y);
                 if (foundTilesMap == null) return;
                 CheckState[][] deletableTilesMap = findDeletableTiles(foundTilesMap);
-                if (deletableTilesMap == null) return;
+                if (deletableTilesMap == null) {
+                    endTime -= 2;
+                    soundPool.play(missSound, 1, 1, 0, 0, 1);
+                    return;
+                }
                 deleteTiles(deletableTilesMap, index.x, index.y);
                 break;
             }
@@ -243,7 +250,7 @@ public class BoardManager extends GameObject {
     }
 
     private void deleteTiles(CheckState[][] deletableTilesMap, int x, int y) {
-        soundPool.play(soundOne, 1, 1, 0, 0, 1);
+        soundPool.play(deleteSound, 1, 1, 0, 0, 1);
         CheckState[][] foundRouteMap = new CheckState[rowNum][columnNum];
         for (int row = 0; row < rowNum; row++) {
             for (int col = 0; col < columnNum; col++) {
