@@ -57,7 +57,7 @@ public class GameManager extends GameObject {
                 pauseScreen.initialize();
             }
         });
-        pauseButton.setText("||", (int) Math.floor(btnWidth * 0.6), Color.WHITE);
+        pauseButton.setText("| |", (int) Math.floor(btnWidth * 0.6), Color.WHITE);
 
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
                 // USAGE_MEDIA
@@ -87,12 +87,7 @@ public class GameManager extends GameObject {
 
     @Override
     public void update() {
-        if (isOnPause) {
-            gameState = GameState.PAUSE;
-            pauseScreen.initialize();
-            isOnPause = false;
-        }
-        switch (gameState) {
+       switch (gameState) {
             case NORMAL:
                 board.update();
                 pauseButton.update();
@@ -101,6 +96,11 @@ public class GameManager extends GameObject {
                     Score score = new Score(context);
                     score.setScore(board.getScore());
                     soundPool.play(gameOverSound, 1, 1, 0, 0, 1);
+                }
+                if (isOnPause) {
+                    gameState = GameState.PAUSE;
+                    pauseScreen.initialize();
+                    isOnPause = false;
                 }
                 break;
             case GAME_OVER:

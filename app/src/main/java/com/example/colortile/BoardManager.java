@@ -44,6 +44,7 @@ public class BoardManager extends GameObject {
     private Float tileSize;
     private Tile[][] board;
     private DotEffectSystem dotEffectSystem = new DotEffectSystem(context);
+    private MissEffectSystem missEffectSystem = new MissEffectSystem(context);
 
     BoardManager(int rowNum, int columnNum, Context context) {
         super(context);
@@ -69,15 +70,16 @@ public class BoardManager extends GameObject {
                 .setMaxStreams(2)
                 .build();
 
-
         deleteSound = soundPool.load(context, R.raw.poka03, 1);
         missSound = soundPool.load(context, R.raw.blip04, 1);
         dotEffectSystem.getTransform().setParent(getTransform());
+        missEffectSystem.getTransform().setParent(getTransform());
         dotEffectSystem.initialize();
+        missEffectSystem.initialize();
         createTiles();
         setSize();
         score = 0;
-        endTime = 45f;
+        endTime = 30f;
         Score.initialize();
     }
 
@@ -86,6 +88,7 @@ public class BoardManager extends GameObject {
     public void update() {
         time += Time.getDeltaTime();
         dotEffectSystem.update();
+        missEffectSystem.update();
         MyMotionEvent event = Input.getEvent();
         if (event == null) return;
         onTouch(event);
@@ -115,6 +118,7 @@ public class BoardManager extends GameObject {
             }
         }
         dotEffectSystem.draw(canvas);
+        missEffectSystem.draw(canvas);
         paint.setTextSize(ScreenSettings.getWidth() / 10);
         paint.setColor(Color.BLACK);
         paint.setTextAlign(Paint.Align.CENTER);
@@ -132,6 +136,7 @@ public class BoardManager extends GameObject {
         this.width = ScreenSettings.getWidth() - BOARD_MARGIN_LEFT_AND_RIGHT * ScreenSettings.getWidth();
         tileSize = width / columnNum;
         dotEffectSystem.setSize(tileSize / 7f);
+        missEffectSystem.setSize(tileSize * 0.8f);
         this.height = tileSize * rowNum;
         for (int row = 0; row < rowNum; row++) {
             for (int col = 0; col < columnNum; col++) {
@@ -167,7 +172,6 @@ public class BoardManager extends GameObject {
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP: {
                 isPressing = false;
-                dotEffectSystem.add(new PointF(event.getX(), event.getY()));
                 PointF p = new PointF(event.getX(), event.getY());
                 Point index = worldToArrayIndex(p);
                 if (index == null) return;
@@ -175,6 +179,10 @@ public class BoardManager extends GameObject {
                 if (foundTilesMap == null) return;
                 CheckState[][] deletableTilesMap = findDeletableTiles(foundTilesMap);
                 if (deletableTilesMap == null) {
+                    PointF pos = arrayIndexToWorld(new Point(index.x, index.y));
+                    pos.x += tileSize / 2;
+                    pos.y += tileSize / 2;
+                    missEffectSystem.add(pos);
                     endTime -= 2;
                     soundPool.play(missSound, 1, 1, 0, 0, 1);
                     return;
@@ -192,8 +200,6 @@ public class BoardManager extends GameObject {
             }
         }
     }
-
-
 
     private CheckState[][] findTiles(int x, int y) {
         CheckState[][] checkedMap = new CheckState[rowNum][columnNum];

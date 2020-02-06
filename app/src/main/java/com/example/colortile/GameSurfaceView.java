@@ -12,6 +12,8 @@ import android.view.View;
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable, View.OnTouchListener {
     private static long FPS = 60l;
 
+    private long lastFrameTime;
+
     private Thread thread;
     private Boolean isActive = true;
 
@@ -21,6 +23,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private PointF translation;
     private float scale;
 
+
     public GameSurfaceView(Context context) {
         super(context);
         WIDTH = ScreenSettings.getWidth();
@@ -29,6 +32,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         setOnTouchListener(this);
         sceneManager = new SceneManager(context, SceneManager.SCENE.TITLE);
         sceneManager.initialize();
+        Time.initialize();
+        lastFrameTime = System.currentTimeMillis();
     }
 
     @Override
@@ -79,10 +84,15 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
             // 次のフレームまで停止
             try {
-                Thread.sleep(1000 / FPS);
+                long frameTime = System.currentTimeMillis() - lastFrameTime;
+                // 前のフレームからの経過時間が規定より早い場合、早すぎた時間分sleep
+                if (frameTime < 1000 / FPS) {
+                    Thread.sleep(1000 / FPS - frameTime);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            lastFrameTime = System.currentTimeMillis();
         }
     }
 

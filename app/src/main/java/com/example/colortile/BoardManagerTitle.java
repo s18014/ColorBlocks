@@ -57,18 +57,20 @@ public class BoardManagerTitle extends GameObject {
     public void update() {
         dotEffectSystem.update();
         time += Time.getDeltaTime();
-        if (time > 1) {
-            time = 0;
-            initialize();
-        }
-        if (col + 1 >= columnNum) {
-            row++;
-            col = -1;
-        }
-        col++;
-        if (row + 1 >= rowNum && col + 1 >= columnNum) {
-            row = 0;
-            col = 0;
+        if (Time.getFrame() % 2 == 0) {
+            if (time > 1) {
+                time = 0;
+                initialize();
+            }
+            if (col + 1 >= columnNum) {
+                row++;
+                col = -1;
+            }
+            col++;
+            if (row + 1 >= rowNum && col + 1 >= columnNum) {
+                row = 0;
+                col = 0;
+            }
         }
         CheckState[][] foundTilesMap = findTiles(col, row);
         if (foundTilesMap == null) return;
@@ -76,7 +78,7 @@ public class BoardManagerTitle extends GameObject {
         if (deletableTilesMap == null) return;
         deleteTiles(deletableTilesMap, col, row);
 
-   }
+    }
 
     @Override
     public void draw(Canvas canvas) {

@@ -7,8 +7,8 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 
 public class DotEffect extends GameObject {
-    static Long endTime = 400l;
-    private Long startTime = 0L;
+    private float endTime = 0.4f;
+    private float time = 0f;
     public Boolean isExists = false;
     public float size = 0f;
 
@@ -19,7 +19,7 @@ public class DotEffect extends GameObject {
 
     public void init(PointF position) {
         getTransform().setPosition(position);
-        this.startTime = System.currentTimeMillis();
+        time = 0f;
     }
 
     public void setSize(Float size) {
@@ -27,17 +27,16 @@ public class DotEffect extends GameObject {
     }
 
     public void draw(Canvas canvas) {
-        Long time = System.currentTimeMillis() - startTime;
-        float ratio = (float) time / endTime;
+        float ratio = time / endTime;
         if (ratio > 1f) ratio = 1f;
         Paint paint = new Paint();
-        paint.setColor(Color.argb((int) (255f * (1 -ratio)), 150, 150, 150));
+        paint.setColor(Color.argb((int) (255f * (1f - ratio)), 150, 150, 150));
         PointF pos = getTransform().getPosition();
         canvas.drawCircle(pos.x, pos.y, size, paint);
     }
 
     public void update() {
-        Long time = System.currentTimeMillis() - startTime;
+        time += Time.getDeltaTime();
         if (time > endTime) isExists = false;
     }
 }
