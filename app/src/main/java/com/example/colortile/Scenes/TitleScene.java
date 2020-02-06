@@ -1,10 +1,16 @@
-package com.example.colortile;
+package com.example.colortile.Scenes;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
+
+import com.example.colortile.BoardManagerTitle;
+import com.example.colortile.CnvButton;
+import com.example.colortile.R;
+import com.example.colortile.Score;
+import com.example.colortile.ScreenSettings;
 
 public class TitleScene extends BaseScene {
     private CnvButton cnvButton;
@@ -31,7 +37,7 @@ public class TitleScene extends BaseScene {
         cnvButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SceneManager.changeScene(SceneManager.SCENE.GAME);
+                SceneManager.replaceScene(SceneManager.SCENE.GAME);
             }
         });
     }

@@ -1,13 +1,15 @@
-package com.example.colortile;
+package com.example.colortile.Scenes;
 
 import android.content.Context;
 import android.graphics.Canvas;
+
+import com.example.colortile.ITask;
 
 public abstract class BaseScene implements ITask {
 
     protected Context context;
 
-    BaseScene(Context context) {
+    public BaseScene(Context context) {
         this.context = context;
     }
 

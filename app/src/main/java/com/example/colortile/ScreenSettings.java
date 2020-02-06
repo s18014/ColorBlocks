@@ -2,7 +2,7 @@ package com.example.colortile;
 
 public class ScreenSettings {
 
-    enum DISPLAY_MODE {
+    public enum DISPLAY_MODE {
         NORMAL,
         DEBUG
     }
@@ -19,6 +19,6 @@ public class ScreenSettings {
     }
 
     public static DISPLAY_MODE getDisplayMode() {
-        return DISPLAY_MODE.NORMAL;
+        return DISPLAY_MODE.DEBUG;
     }
 }

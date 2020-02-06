@@ -7,7 +7,7 @@ public abstract class GameObject implements ITask {
     private Transform transform = new Transform();
     protected Context context;
 
-    GameObject(Context context) {
+    public GameObject(Context context) {
         this.context = context;
     }
 

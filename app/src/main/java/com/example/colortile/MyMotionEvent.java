@@ -6,7 +6,7 @@ public class MyMotionEvent {
     private float x;
     private float y;
 
-    MyMotionEvent(int action, float x, float y) {
+    public MyMotionEvent(int action, float x, float y) {
         this.action = action;
         this.x = x;
         this.y = y;

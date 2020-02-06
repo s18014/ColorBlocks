@@ -11,11 +11,11 @@ public class Tile extends GameObject {
     public Boolean isExists = false;
     public Type type = Type.NONE;
 
-    private Float padding = 0f;
-    private Float edgeSize = 0f;
-    private Float size = 0f;
+    private float padding = 0f;
+    private float edgeSize = 0f;
+    private float size = 0f;
 
-    Tile(Context context) {
+    public Tile(Context context) {
         super(context);
     }
 

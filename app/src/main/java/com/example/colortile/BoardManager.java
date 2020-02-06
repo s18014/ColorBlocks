@@ -10,6 +10,8 @@ import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.view.MotionEvent;
 
+import com.example.colortile.Scenes.SceneManager;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +31,7 @@ public class BoardManager extends GameObject {
     private SoundPool soundPool;
     private int deleteSound;
     private int missSound;
+    private int gameOverSound;
 
     private Float width;
     private Float height;
@@ -43,10 +46,12 @@ public class BoardManager extends GameObject {
 
     private Float tileSize;
     private Tile[][] board;
+    private Score scoreManager = new Score(context);
     private DotEffectSystem dotEffectSystem = new DotEffectSystem(context);
     private MissEffectSystem missEffectSystem = new MissEffectSystem(context);
+    private TileFadeOutEffectSystem tileFadeOutEffectSystem = new TileFadeOutEffectSystem(context);
 
-    BoardManager(int rowNum, int columnNum, Context context) {
+    public BoardManager(int rowNum, int columnNum, Context context) {
         super(context);
         this.rowNum = rowNum;
         this.columnNum = columnNum;
@@ -72,10 +77,12 @@ public class BoardManager extends GameObject {
 
         deleteSound = soundPool.load(context, R.raw.poka03, 1);
         missSound = soundPool.load(context, R.raw.blip04, 1);
+        gameOverSound = soundPool.load(context, R.raw.crrect_answer3, 1);
         dotEffectSystem.getTransform().setParent(getTransform());
         missEffectSystem.getTransform().setParent(getTransform());
         dotEffectSystem.initialize();
         missEffectSystem.initialize();
+        tileFadeOutEffectSystem.initialize();
         createTiles();
         setSize();
         score = 0;
@@ -86,9 +93,15 @@ public class BoardManager extends GameObject {
 
     @Override
     public void update() {
+        if (isGameOver()) {
+            soundPool.play(gameOverSound, 1, 1, 0, 0, 1);
+            scoreManager.setScore(score);
+            SceneManager.pushScene(SceneManager.SCENE.RESULT);
+        }
         time += Time.getDeltaTime();
         dotEffectSystem.update();
         missEffectSystem.update();
+        tileFadeOutEffectSystem.update();
         MyMotionEvent event = Input.getEvent();
         if (event == null) return;
         onTouch(event);
@@ -117,6 +130,7 @@ public class BoardManager extends GameObject {
                 board[row][col].draw(canvas);
             }
         }
+        tileFadeOutEffectSystem.draw(canvas);
         dotEffectSystem.draw(canvas);
         missEffectSystem.draw(canvas);
         paint.setTextSize(ScreenSettings.getWidth() / 10);
@@ -128,15 +142,12 @@ public class BoardManager extends GameObject {
         canvas.drawText(timeStr + "秒", ScreenSettings.getWidth() / 6f, ScreenSettings.getWidth() / 6f, paint);
    }
 
-    public int getScore() {
-        return score;
-    }
-
     public void setSize() {
         this.width = ScreenSettings.getWidth() - BOARD_MARGIN_LEFT_AND_RIGHT * ScreenSettings.getWidth();
         tileSize = width / columnNum;
         dotEffectSystem.setSize(tileSize / 7f);
         missEffectSystem.setSize(tileSize * 0.8f);
+        tileFadeOutEffectSystem.setSize(tileSize);
         this.height = tileSize * rowNum;
         for (int row = 0; row < rowNum; row++) {
             for (int col = 0; col < columnNum; col++) {
@@ -262,6 +273,27 @@ public class BoardManager extends GameObject {
             for (int col = 0; col < columnNum; col++) {
                 if (deletableTilesMap[row][col] == CheckState.CHECKED) {
                     board[row][col].isExists = false;
+                    int color = 0;
+                    switch (board[row][col].type) {
+                        case A:
+                            color = Color.parseColor("#ee88b7");
+                            break;
+                        case B:
+                            color = Color.parseColor("#ffd700");
+                            break;
+                        case C:
+                            color = Color.parseColor("#a0e3cd");
+                            break;
+                        case D:
+                            color = Color.parseColor("#98cde8");
+                            break;
+                        case E:
+                            color = Color.parseColor("#d3b0e8");
+                            break;
+                        case NONE:
+                            break;
+                    }
+                    tileFadeOutEffectSystem.add(arrayIndexToWorld(new Point(col, row)), color);
                     score++;
                     findRoute(x, y, col, row, foundRouteMap);
                 }

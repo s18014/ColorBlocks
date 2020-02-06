@@ -1,8 +1,6 @@
 package com.example.colortile;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -37,7 +35,7 @@ public class CnvButton extends GameObject {
     private int clickSound;
 
 
-    CnvButton(Context context, int btnImageId, float x, float y, float width, float height) {
+    public CnvButton(Context context, int btnImageId, float x, float y, float width, float height) {
         super(context);
         this.width = width;
         this.height = height;
@@ -149,10 +147,6 @@ public class CnvButton extends GameObject {
         if (pressed) {
             paint.setColor(Color.argb(30, 50, 50, 50));
             canvas.drawRect(blindRectF, paint);
-        }
-        if (ScreenSettings.getDisplayMode() == ScreenSettings.DISPLAY_MODE.DEBUG) {
-            paint.setColor(Color.argb(50, 50, 50, 50));
-            canvas.drawRect(rectF, paint);
         }
     }
 

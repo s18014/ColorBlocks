@@ -1,8 +1,10 @@
-package com.example.colortile;
+package com.example.colortile.Scenes;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.view.View;
+
+import com.example.colortile.GameManager;
+import com.example.colortile.GameObject;
 
 public class GameScene extends BaseScene {
 

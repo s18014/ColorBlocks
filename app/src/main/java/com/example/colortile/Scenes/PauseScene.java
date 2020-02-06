@@ -1,4 +1,4 @@
-package com.example.colortile;
+package com.example.colortile.Scenes;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -6,7 +6,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 
-public class PauseScreen extends GameObject{
+import com.example.colortile.CnvButton;
+import com.example.colortile.R;
+import com.example.colortile.ScreenSettings;
+import com.example.colortile.Time;
+
+public class PauseScene extends BaseScene {
 
     private CnvButton titleButton;
     private CnvButton retryButton;
@@ -17,7 +22,7 @@ public class PauseScreen extends GameObject{
     private float btnHeight;
     private float time;
 
-    PauseScreen(Context context) {
+    PauseScene(Context context) {
         super(context);
     }
 
@@ -36,7 +41,8 @@ public class PauseScreen extends GameObject{
         titleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SceneManager.changeScene(SceneManager.SCENE.TITLE);
+                SceneManager.removeAll();
+                SceneManager.replaceScene(SceneManager.SCENE.TITLE);
             }
         });
         titleButton.setText("タイトルに戻る", (int) btnWidth / 7, Color.WHITE);
@@ -51,7 +57,8 @@ public class PauseScreen extends GameObject{
         retryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SceneManager.changeScene(SceneManager.SCENE.GAME);
+                SceneManager.removeAll();
+                SceneManager.replaceScene(SceneManager.SCENE.GAME);
             }
         });
         retryButton.setText("やり直す", (int) btnWidth / 7, Color.WHITE);
@@ -66,7 +73,7 @@ public class PauseScreen extends GameObject{
         resumeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isPause = false;
+                SceneManager.popScene();
             }
         });
         resumeButton.setText("再開", (int) btnWidth / 7, Color.WHITE);

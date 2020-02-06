@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Transform {
     private Transform parent;
-    private List<Transform> children = new ArrayList<Transform>();
+    private List<Transform> children = new ArrayList<>();
     private PointF position = new PointF(0f, 0f);
     private PointF localPosition = new PointF(0f, 0f);
 

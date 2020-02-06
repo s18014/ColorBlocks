@@ -7,7 +7,7 @@ public class Score {
     private static int score;
     private Context context;
 
-    Score(Context context) {
+    public Score(Context context) {
         this.context = context;
     }
 

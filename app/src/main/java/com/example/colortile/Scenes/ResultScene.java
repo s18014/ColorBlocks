@@ -1,4 +1,4 @@
-package com.example.colortile;
+package com.example.colortile.Scenes;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -6,14 +6,19 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 
-public class ResultScreen extends GameObject{
+import com.example.colortile.CnvButton;
+import com.example.colortile.R;
+import com.example.colortile.Score;
+import com.example.colortile.ScreenSettings;
+
+public class ResultScene extends BaseScene {
 
     private CnvButton titleButton;
     private CnvButton retryButton;
     private float btnWidth;
     private float btnHeight;
 
-    ResultScreen(Context context) {
+    ResultScene(Context context) {
         super(context);
     }
 
@@ -32,7 +37,7 @@ public class ResultScreen extends GameObject{
         titleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SceneManager.changeScene(SceneManager.SCENE.TITLE);
+                SceneManager.replaceScene(SceneManager.SCENE.TITLE);
             }
         });
         titleButton.setText("タイトルに戻る", (int) btnWidth / 7, Color.WHITE);
@@ -47,7 +52,7 @@ public class ResultScreen extends GameObject{
         retryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SceneManager.changeScene(SceneManager.SCENE.GAME);
+                SceneManager.replaceScene(SceneManager.SCENE.GAME);
             }
         });
         retryButton.setText("やり直す", (int) btnWidth / 7, Color.WHITE);

@@ -13,7 +13,7 @@ public class MissEffect extends GameObject {
     public Boolean isExists = false;
     public float size = 0f;
 
-    MissEffect(Context context) {
+    public MissEffect(Context context) {
         super(context);
     }
 

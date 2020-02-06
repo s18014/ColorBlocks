@@ -12,7 +12,7 @@ public class DotEffect extends GameObject {
     public Boolean isExists = false;
     public float size = 0f;
 
-    DotEffect(Context context) {
+    public DotEffect(Context context) {
         super(context);
     }
 

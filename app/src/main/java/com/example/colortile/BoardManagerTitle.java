@@ -38,7 +38,7 @@ public class BoardManagerTitle extends GameObject {
     private int row = 0;
     private int col = 0;
 
-    BoardManagerTitle(int rowNum, int columnNum, Context context) {
+    public BoardManagerTitle(int rowNum, int columnNum, Context context) {
         super(context);
         this.rowNum = rowNum;
         this.columnNum = columnNum;

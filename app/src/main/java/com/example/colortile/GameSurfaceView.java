@@ -9,6 +9,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import com.example.colortile.Scenes.SceneManager;
+
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable, View.OnTouchListener {
     private static long FPS = 60l;
 
@@ -112,7 +114,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             sceneManager.draw(canvas);
             getHolder().unlockCanvasAndPost(canvas);
         }
-    }
+   }
 
     public void onResume() {
         sceneManager.onResume();

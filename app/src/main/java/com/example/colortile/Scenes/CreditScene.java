@@ -1,10 +1,10 @@
-package com.example.colortile;
+package com.example.colortile.Scenes;
 
 import android.content.Context;
 import android.graphics.Canvas;
 
 public class CreditScene extends BaseScene {
-    CreditScene(Context context) {
+    public CreditScene(Context context) {
         super(context);
     }
 

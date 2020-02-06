@@ -9,7 +9,7 @@ public class DotEffectSystem extends GameObject{
 
     private final DotEffect[] effects = new DotEffect[size];
 
-    DotEffectSystem(Context context) {
+    public DotEffectSystem(Context context) {
         super(context);
     }
 

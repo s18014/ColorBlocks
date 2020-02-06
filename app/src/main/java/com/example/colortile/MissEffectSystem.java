@@ -9,7 +9,7 @@ public class MissEffectSystem extends GameObject{
 
     private final MissEffect[] effects = new MissEffect[size];
 
-    MissEffectSystem(Context context) {
+    public MissEffectSystem(Context context) {
         super(context);
     }
 
