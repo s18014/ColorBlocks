@@ -34,6 +34,7 @@ public class BoardManagerTitle extends GameObject {
     private Float tileSize;
     private Tile[][] board;
     private DotEffectSystem dotEffectSystem = new DotEffectSystem(context);
+    private TileFadeOutEffectSystem tileFadeOutEffectSystem = new TileFadeOutEffectSystem(context);
     private float time;
     private int row = 0;
     private int col = 0;
@@ -49,6 +50,7 @@ public class BoardManagerTitle extends GameObject {
     public void initialize() {
         dotEffectSystem.getTransform().setParent(getTransform());
         dotEffectSystem.initialize();
+        tileFadeOutEffectSystem.initialize();
         createTiles();
         setSize();
     }
@@ -56,9 +58,10 @@ public class BoardManagerTitle extends GameObject {
     @Override
     public void update() {
         dotEffectSystem.update();
+        tileFadeOutEffectSystem.update();
         time += Time.getDeltaTime();
         if (Time.getFrame() % 2 == 0) {
-            if (time > 1) {
+            if (time > 1.5f) {
                 time = 0;
                 initialize();
             }
@@ -104,12 +107,14 @@ public class BoardManagerTitle extends GameObject {
             }
         }
         dotEffectSystem.draw(canvas);
+        tileFadeOutEffectSystem.draw(canvas);
     }
 
     public void setSize() {
         this.width = ScreenSettings.getWidth() - BOARD_MARGIN_LEFT_AND_RIGHT * ScreenSettings.getWidth();
         tileSize = width / columnNum;
         dotEffectSystem.setSize(tileSize / 7f);
+        tileFadeOutEffectSystem.setSize(tileSize);
         this.height = tileSize * rowNum;
         for (int row = 0; row < rowNum; row++) {
             for (int col = 0; col < columnNum; col++) {
@@ -145,7 +150,6 @@ public class BoardManagerTitle extends GameObject {
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP: {
                 isPressing = false;
-                dotEffectSystem.add(new PointF(event.getX(), event.getY()));
                 PointF p = new PointF(event.getX(), event.getY());
                 Point index = worldToArrayIndex(p);
                 if (index == null) return;
@@ -229,6 +233,29 @@ public class BoardManagerTitle extends GameObject {
             for (int col = 0; col < columnNum; col++) {
                 if (deletableTilesMap[row][col] == CheckState.CHECKED) {
                     board[row][col].isExists = false;
+
+                    int color = 0;
+                    switch (board[row][col].type) {
+                        case A:
+                            color = Color.parseColor("#ee88b7");
+                            break;
+                        case B:
+                            color = Color.parseColor("#ffd700");
+                            break;
+                        case C:
+                            color = Color.parseColor("#a0e3cd");
+                            break;
+                        case D:
+                            color = Color.parseColor("#98cde8");
+                            break;
+                        case E:
+                            color = Color.parseColor("#d3b0e8");
+                            break;
+                        case NONE:
+                            break;
+                    }
+                    tileFadeOutEffectSystem.add(arrayIndexToWorld(new Point(col, row)), color);
+
                     findRoute(x, y, col, row, foundRouteMap);
                 }
             }

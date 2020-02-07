@@ -51,6 +51,7 @@ public class SceneManager implements ITask {
 
     @Override
     public void update() {
+        System.out.println(sceneList.size());
         if (removeAllFrag) {
             if (!sceneList.isEmpty()) {
                 for (BaseScene scene: sceneList) {

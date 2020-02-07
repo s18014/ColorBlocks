@@ -133,14 +133,22 @@ public class BoardManager extends GameObject {
         tileFadeOutEffectSystem.draw(canvas);
         dotEffectSystem.draw(canvas);
         missEffectSystem.draw(canvas);
+       float restTime = endTime - time;
+        if (restTime < 0) restTime = 0;
+
         paint.setTextSize(ScreenSettings.getWidth() / 10);
         paint.setColor(Color.BLACK);
-        paint.setTextAlign(Paint.Align.CENTER);
-        float restTime = endTime - time;
-        if (restTime < 0) restTime = 0;
-        String timeStr = String.format("%.1f", restTime);
-        canvas.drawText(timeStr + "秒", ScreenSettings.getWidth() / 6f, ScreenSettings.getWidth() / 6f, paint);
-   }
+        paint.setTextAlign(Paint.Align.RIGHT);
+        String timeStr = String.format("%.1f秒", restTime);
+        canvas.drawText(timeStr, ScreenSettings.getWidth() / 3f, ScreenSettings.getWidth() / 6f, paint);
+
+        paint.setTextSize(ScreenSettings.getWidth() / 20);
+        paint.setColor(Color.rgb(150, 100, 100));
+        paint.setTextAlign(Paint.Align.LEFT);
+        String scoreStr = String.format("Score: %d", score);
+        canvas.drawText(scoreStr, ScreenSettings.getWidth() * 0.5f, ScreenSettings.getWidth() / 6f, paint);
+
+    }
 
     public void setSize() {
         this.width = ScreenSettings.getWidth() - BOARD_MARGIN_LEFT_AND_RIGHT * ScreenSettings.getWidth();

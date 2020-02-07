@@ -7,7 +7,7 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 
 public class DotEffect extends GameObject {
-    private float endTime = 0.4f;
+    private float endTime = 0.5f;
     private float time = 0f;
     public Boolean isExists = false;
     public float size = 0f;

@@ -37,6 +37,7 @@ public class ResultScene extends BaseScene {
         titleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SceneManager.removeAll();
                 SceneManager.replaceScene(SceneManager.SCENE.TITLE);
             }
         });
@@ -52,6 +53,7 @@ public class ResultScene extends BaseScene {
         retryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SceneManager.removeAll();
                 SceneManager.replaceScene(SceneManager.SCENE.GAME);
             }
         });
