@@ -1,0 +1,52 @@
+package com.example.colorblocks.Scenes;
+
+import android.content.Context;
+import android.graphics.Canvas;
+
+import com.example.colorblocks.GameManager;
+import com.example.colorblocks.GameObject;
+
+public class GameScene extends BaseScene {
+
+    private GameObject gameManager = new GameManager(context);
+
+    GameScene(Context context) {
+        super(context);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        gameManager.initialize();
+    }
+
+    @Override
+    public void finalize() {
+        super.finalize();
+        gameManager.finalize();
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        gameManager.update();
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+        gameManager.draw(canvas);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        gameManager.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        gameManager.onResume();
+    }
+}
