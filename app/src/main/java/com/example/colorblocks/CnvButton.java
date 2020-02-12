@@ -122,27 +122,29 @@ public class CnvButton extends GameObject {
     public void draw(Canvas canvas) {
         canvas.drawBitmap(btnBitmap, translate.x + x, translate.y + y, null);
 
-        // 文字を表示
-        float centerX = x + translate.x + btnBitmap.getWidth() / 2;
-        float centerY = y + translate.y + btnBitmap.getHeight() / 2;
+        if (text != null) {
+            // 文字を表示
+            float centerX = x + translate.x + btnBitmap.getWidth() / 2;
+            float centerY = y + translate.y + btnBitmap.getHeight() / 2;
 
-        // テキスト用ペイントの生成
-        Paint textPaint = new Paint( Paint.ANTI_ALIAS_FLAG);
-        textPaint.setTextSize(textSize);
-        textPaint.setColor( textColor);
+            // テキスト用ペイントの生成
+            Paint textPaint = new Paint( Paint.ANTI_ALIAS_FLAG);
+            textPaint.setTextSize(textSize);
+            textPaint.setColor( textColor);
 
-        Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
+            Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
 
-        // 文字列の幅を取得
-        float textWidth = textPaint.measureText( text);
+            // 文字列の幅を取得
+            float textWidth = textPaint.measureText( text);
 
-        // 中心にしたいX座標から文字列の幅の半分を引く
-        float baseX = centerX - textWidth / 2;
-        // 中心にしたいY座標からAscentとDescentの半分を引く
-        float baseY = centerY - (fontMetrics.ascent + fontMetrics.descent) / 2;
+            // 中心にしたいX座標から文字列の幅の半分を引く
+            float baseX = centerX - textWidth / 2;
+            // 中心にしたいY座標からAscentとDescentの半分を引く
+            float baseY = centerY - (fontMetrics.ascent + fontMetrics.descent) / 2;
 
-        // テキストの描画
-        canvas.drawText( text, baseX, baseY, textPaint);
+            // テキストの描画
+            canvas.drawText( text, baseX, baseY, textPaint);
+        }
 
         if (pressed) {
             paint.setColor(Color.argb(30, 50, 50, 50));

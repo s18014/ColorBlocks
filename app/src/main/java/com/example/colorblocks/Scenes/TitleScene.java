@@ -1,6 +1,8 @@
 package com.example.colorblocks.Scenes;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -15,6 +17,7 @@ import com.example.colorblocks.ScreenSettings;
 public class TitleScene extends BaseScene {
     private CnvButton cnvButton;
     private BoardManagerTitle boardManagerTitle;
+    private CnvButton titleLogo;
 
     TitleScene(Context context) {
         super(context);
@@ -40,6 +43,15 @@ public class TitleScene extends BaseScene {
                 SceneManager.replaceScene(SceneManager.SCENE.GAME);
             }
         });
+
+        btnWidth = ScreenSettings.getWidth() * 0.8f;
+        btnHeight = btnWidth * (540f / 960f);
+        titleLogo = new CnvButton(context, R.drawable.title_logo_960x540,
+                ScreenSettings.getWidth() / 2f - btnWidth / 2f,
+                ScreenSettings.getHeight() * 0.2f,
+                btnWidth,
+                btnHeight);
+        titleLogo.initialize();
     }
 
     @Override
@@ -63,12 +75,13 @@ public class TitleScene extends BaseScene {
         paint.setColor(Color.WHITE);
         paint.setTextSize(ScreenSettings.getWidth() / 7f);
         paint.setTextAlign(Paint.Align.CENTER);
-        canvas.drawText("COLOR BLOCKS", ScreenSettings.getWidth() * 0.5f, ScreenSettings.getHeight() / 4f, paint);
 
         Score score = new Score(context);
         paint.setTextSize(ScreenSettings.getWidth() / 10f);
-        canvas.drawText("HIGH SCORE", ScreenSettings.getWidth() * 0.5f, ScreenSettings.getHeight() / 2.3f, paint);
-        canvas.drawText(Integer.toString(score.getHighScore()), ScreenSettings.getWidth() / 2f, ScreenSettings.getHeight() / 2f, paint);
+        canvas.drawText("HIGH SCORE", ScreenSettings.getWidth() * 0.5f, ScreenSettings.getHeight() * 0.6f, paint);
+        canvas.drawText(Integer.toString(score.getHighScore()), ScreenSettings.getWidth() / 2f, ScreenSettings.getHeight() * 0.68f, paint);
         cnvButton.draw(canvas);
+
+        titleLogo.draw(canvas);
     }
 }
