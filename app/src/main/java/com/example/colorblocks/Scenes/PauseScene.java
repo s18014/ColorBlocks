@@ -102,7 +102,7 @@ public class PauseScene extends BaseScene {
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        float ratio = time / 0.5f;
+        float ratio = time / 0.15f;
         if (ratio > 1) ratio = 1;
         canvas.drawColor(Color.argb((int) (255 * ratio), 50, 50, 50));
         titleButton.draw(canvas);
