@@ -86,7 +86,7 @@ public class BoardManager extends GameObject {
         createTiles();
         setSize();
         score = 0;
-        endTime = 30f;
+        endTime = 60f;
         Score.initialize();
     }
 
